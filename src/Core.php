@@ -18,14 +18,41 @@ class Core
     {
         add_action('save_post', [$this, 'save_post'], 10, 3);
 
+        add_action('krn_flattable_check_table', [$this, 'checkTable'], 10, 2);
+
         //DEMO
         add_filter('krn_flattable_enabled_article', [$this, "flattable_enabled"], 10, 2);
         add_filter('krn_flattable_columns_article', [$this, "flattable_columns"], 10, 2);
         add_filter('krn_flattable_values_article', [$this, "flattable_values"], 10, 2);
+        add_filter('krn_flattable_pre_write_article', [$this, 'flattable_pre_write'], 10, 2);
     }
     public function flattable_enabled($state, $postObject = null)
     {
         return true;
+    }
+    public function flattable_pre_write($columns, $postObject) {
+      global $wpdb;
+      $new_columns = [
+          ["column" => "post_id", "type" =>  "int(12)", "printf" => "%d"],
+          ["column" => "post_ressort", "type" =>  "int(12)", "printf" => "%d"],
+      ];
+      //Check that the posts<->ressort table exists
+      do_action('krn_flattable_check_table', 'articles_in_ressort', $new_columns);
+
+
+      $table_name = $wpdb->prefix . 'flattable_articles_in_ressort';
+
+      //Delete all current relations:
+      $wpdb->query("delete from " . $table_name .  " where post_id = " . $postObject->ID);
+
+
+      //Insert new Relations
+      $ressort_repater = get_field('field_58512668ff1d2', $postObject->ID);
+      foreach($ressort_repater as $rep) {
+        $sql = "insert into $table_name (post_id, post_ressort) values(" . $postObject->ID . ", " . $rep["ressort_id"]->ID . ")";
+        $wpdb->query($sql);
+      }
+
     }
     public function flattable_values($data, $postObject)
     {
@@ -50,14 +77,14 @@ class Core
         //check if flattable is enabled for this post type.
         $enabled = apply_filters('krn_flattable_enabled_' . $postType, false, $postObject, $postObject);
         if ($enabled) {
-            //We are in flattable enabled mode.
-        //get a list of columns.
+           //We are in flattable enabled mode.
+          //get a list of columns.
           $defaultCols = [
             ["column" => "post_id", "type" =>  "int(12)"],
             ["column" => "post_type", "type" =>  "varchar(100)"],
           ];
-            $columns = apply_filters('krn_flattable_columns_' . $postType, $defaultCols, $postObject);
-
+          $columns = apply_filters('krn_flattable_columns_' . $postType, $defaultCols, $postObject);
+          do_action('krn_flattable_pre_write_' . $postType, $columns, $postObject);
           //check if table exists, and if table has atleast required columns
           if ($this->checkTable($postType, $columns)) {
               $db_cols = [];
@@ -72,12 +99,16 @@ class Core
                 //Check if flat table record exists
                 // if not existig switch to INSERT
                 //FIXME
+                $checkRow = $wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
+                if(!$checkRow) {
+                  $update = false;
+                }
               }
               if (!$update) {
                   //INSERT
                   $updateCols = ["post_type", "post_id"];
                   $updateVals = ["'" . $postType . "'", $postId];
-                  $updateInserValues = [];
+                  $updateInserValues = [];  
                   foreach ($finalFields as $key => $value) {
                       $updateCols[] =  $key;
                       $updateVals[] = $assoc_db[$key]['printf'];
@@ -90,6 +121,10 @@ class Core
               } else {
                   //UPDATE
 
+                  //$v = get_field('field_58512668ff1d2', $postId);
+                  //echo "<pre>";
+                  //var_dump($v);
+                  //exit;
                   $updateCols = [];
                   $updateVals = [];
                   foreach ($finalFields as $key => $value) {
@@ -102,6 +137,8 @@ class Core
                   $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $updateVals));
                   $wpdb->query($query);
               }
+
+              do_action('krn_flattable_post_write_' . $postType, $postObject);
           }
         }
     }
