@@ -25,6 +25,23 @@ class Core
         add_filter('krn_flattable_columns_article', [$this, "flattable_columns"], 10, 2);
         add_filter('krn_flattable_values_article', [$this, "flattable_values"], 10, 2);
         add_filter('krn_flattable_pre_write_article', [$this, 'flattable_pre_write'], 10, 2);
+
+        /*
+         * DEMO QUERY
+         * 
+         select 
+          	article.*
+         from
+             wp_flattable_articles_in_ressort pir
+            LEFT JOIN wp_flattable_article article ON article.post_id = pir.post_id
+          where
+	          pir.post_ressort in(28);
+
+
+        INDEX: articles_in_ressort -> post_ressort,
+               articles flat -> post_id
+	
+         */
     }
     public function flattable_enabled($state, $postObject = null)
     {
