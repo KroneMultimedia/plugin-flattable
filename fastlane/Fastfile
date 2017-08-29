@@ -1,0 +1,15 @@
+$global_options = {
+  publish: {
+    pre: proc do | options |
+      UI.important "PRE BLOCK"
+    end,
+    post: proc do | options |
+      UI.important "POST BLOCK"
+    end
+  }
+}
+
+
+import_from_git(url: 'git@gitlab.krone.at:KRN/fastlane.git')
+
+

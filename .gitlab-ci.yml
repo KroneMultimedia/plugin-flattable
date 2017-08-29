@@ -1,0 +1,18 @@
+---
+stages:
+- release_publish
+release:publish:
+  dependencies: []
+  stage: release_publish
+  script:
+  - fastlane publish_release
+  tags:
+  - linux-native
+  only:
+  - release
+  - fastlane
+  - beta
+  - master
+before_script:
+- eval $(ssh-agent -s)
+- ssh-add <(echo "$SSH_DEPLOY_KEY")

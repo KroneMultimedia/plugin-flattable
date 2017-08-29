@@ -1,0 +1,19 @@
+{
+  "name": "wordpress/plugin-flattable",
+  "type": "wordpress-plugin",
+  "support": {
+    "src": "http://gitlab.krone.at/WordPress/plugin-flattable"
+  },
+  "extra": {
+    "installer-name": "kmm-flattable"
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "composer/installers": "~1.0"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  }
+}
