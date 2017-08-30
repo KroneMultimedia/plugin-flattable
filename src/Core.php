@@ -16,16 +16,12 @@ class Core
 
     private function add_filters()
     {
-        add_action('save_post', [$this, 'save_post'], 10, 3);
+        add_action('save_post', [$this, 'save_post'], 100, 3);
 
         add_action('krn_flattable_check_table', [$this, 'checkTable'], 10, 2);
+        add_action('krn_flattable_publish', [$this, 'manualPublish'], 10);
 
         //DEMO
-        add_filter('krn_flattable_enabled_article', [$this, "flattable_enabled"], 10, 2);
-        add_filter('krn_flattable_columns_article', [$this, "flattable_columns"], 10, 2);
-        add_filter('krn_flattable_values_article', [$this, "flattable_values"], 10, 2);
-        add_filter('krn_flattable_pre_write_article', [$this, 'flattable_pre_write'], 10, 2);
-
         /*
          * DEMO QUERY
          * 
@@ -43,47 +39,10 @@ class Core
 	
          */
     }
-    public function flattable_enabled($state, $postObject = null)
-    {
-        return true;
-    }
-    public function flattable_pre_write($columns, $postObject) {
-      global $wpdb;
-      $new_columns = [
-          ["column" => "post_id", "type" =>  "int(12)", "printf" => "%d"],
-          ["column" => "post_ressort", "type" =>  "int(12)", "printf" => "%d"],
-      ];
-      //Check that the posts<->ressort table exists
-      do_action('krn_flattable_check_table', 'articles_in_ressort', $new_columns);
-
-
-      $table_name = $wpdb->prefix . 'flattable_articles_in_ressort';
-
-      //Delete all current relations:
-      $wpdb->query("delete from " . $table_name .  " where post_id = " . $postObject->ID);
-
-
-      //Insert new Relations
-      $ressort_repater = get_field('field_58512668ff1d2', $postObject->ID);
-      foreach($ressort_repater as $rep) {
-        $sql = "insert into $table_name (post_id, post_ressort) values(" . $postObject->ID . ", " . $rep["ressort_id"]->ID . ")";
-        $wpdb->query($sql);
-      }
-
-    }
-    public function flattable_values($data, $postObject)
-    {
-        return [
-            "post_title" => $postObject->post_title,
-            "post_status" => $postObject->post_status
-      ];
-    }
-    public function flattable_columns($columns, $postObject)
-    {
-        return [
-          ["column" => "post_title", "type" =>  "varchar(100)", "printf" => "%s"],
-          ["column" => "post_status", "type" =>  "varchar(100)", "printf" => "%s"],
-      ];
+    public function manualPublish($postId) {
+      $postObj = get_post($postId);
+      $_POST["post_type"] = $postObj->post_type;
+      $this->save_post($postId, $postObj, true);
     }
     public function save_post($postId, $postObject, $update)
     {
@@ -100,7 +59,8 @@ class Core
             ["column" => "post_id", "type" =>  "int(12)"],
             ["column" => "post_type", "type" =>  "varchar(100)"],
           ];
-          $columns = apply_filters('krn_flattable_columns_' . $postType, $defaultCols, $postObject);
+          $columns = apply_filters('krn_flattable_columns_' . $postType, [], $postObject);
+          $columns = array_merge($defaultCols, $columns);
           do_action('krn_flattable_pre_write_' . $postType, $columns, $postObject);
           //check if table exists, and if table has atleast required columns
           if ($this->checkTable($postType, $columns)) {
