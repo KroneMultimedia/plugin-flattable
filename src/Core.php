@@ -19,6 +19,7 @@ class Core
         add_action('save_post', [$this, 'save_post'], 100, 3);
 
         add_action('krn_flattable_check_table', [$this, 'checkTable'], 10, 2);
+        add_action('krn_flattable_publish', [$this, 'manualPublish'], 10);
 
         //DEMO
         /*
@@ -37,6 +38,11 @@ class Core
                articles flat -> post_id
 	
          */
+    }
+    public function manualPublish($postId) {
+      $postObj = get_post($postId);
+      $_POST["post_type"] = $postObj->post_type;
+      $this->save_post($postId, $postObj, true);
     }
     public function save_post($postId, $postObject, $update)
     {
