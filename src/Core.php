@@ -69,15 +69,13 @@ class Core
               }
 
               $finalFields = apply_filters('krn_flattable_values_' . $postType, [], $postObject);
-              if($update) {
-                //Check if flat table record exists
-                // if not existig switch to INSERT
-                //FIXME
-                $checkRow = $wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
-                if(!$checkRow) {
+
+              $checkRow = $wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
+              //if we have already a published record, update it
+              if(!$checkRow) {
                   $update = false;
-                }
               }
+
               if (!$update) {
                   //INSERT
                   $updateCols = ["post_type", "post_id"];
