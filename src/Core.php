@@ -72,6 +72,7 @@ class Core
 
               $checkRow = $wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
               //if we have already a published record, update it
+              $update = true;
               if(!$checkRow) {
                   $update = false;
               }
