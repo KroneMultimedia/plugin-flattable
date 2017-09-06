@@ -21,23 +21,20 @@ class Core
         add_action('krn_flattable_check_table', [$this, 'checkTable'], 10, 2);
         add_action('krn_flattable_publish', [$this, 'manualPublish'], 10);
 
+        add_action('init', [$this, 'init'], 30);
+
         //DEMO
-        /*
-         * DEMO QUERY
-         * 
-         select 
-          	article.*
-         from
-             wp_flattable_articles_in_ressort pir
-            LEFT JOIN wp_flattable_article article ON article.post_id = pir.post_id
-          where
-	          pir.post_ressort in(28);
 
-
-        INDEX: articles_in_ressort -> post_ressort,
-               articles flat -> post_id
-	
-         */
+    }
+    public function init() {
+       $post_types = get_post_types();
+       foreach($post_types as $type) {
+         add_action('rest_insert_' . $type, array($this, "rest_update"), 10, 3);
+       }
+    }
+    public function rest_update($postObj, $request, $update) {
+      $_POST["post_type"] = $postObj->post_type;
+      $this->save_post($postObj->ID, $postObj, $update);
     }
     public function manualPublish($postId) {
       $postObj = get_post($postId);
