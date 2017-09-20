@@ -33,6 +33,13 @@ class Core
        }
     }
     public function rest_update($postObj, $request, $update) {
+     /*
+       * class-wp-rest-attachments-controller.php calls the action with $attachment as array, and also calls parent::update_item(),
+       *  -> parent class is class-wp-rest-posts-controller.php, that also calls the action, but with $attachment as type WP_Post
+     */
+      if ( ! $postObj instanceof WP_Post ) {
+        return;
+      }
       $_POST["post_type"] = $postObj->post_type;
       $this->save_post($postObj->ID, $postObj, $update);
     }
