@@ -33,15 +33,22 @@ class Core
        }
     }
     public function rest_update($postObj, $request, $update) {
-     /*
-       * class-wp-rest-attachments-controller.php calls the action with $attachment as array, and also calls parent::update_item(),
-       *  -> parent class is class-wp-rest-posts-controller.php, that also calls the action, but with $attachment as type WP_Post
-     */
-      if ( ! $postObj instanceof \WP_Post ) {
-        return;
-      }
-      $_POST["post_type"] = $postObj->post_type;
-      $this->save_post($postObj->ID, $postObj, $update);
+        /*
+        * class-wp-rest-attachments-controller.php calls the action with $attachment as array, and also calls parent::update_item(),
+        *  -> parent class is class-wp-rest-posts-controller.php, that also calls the action, but with $attachment as type WP_Post
+        */
+        if ( ! $postObj instanceof \WP_Post ) {
+            return;
+        }
+        $_POST["post_type"] = $postObj->post_type;
+        // save all the data in an anonymous function
+        $trigger_func = function ( $response, $handler, $request ) use ( $postObj, $update ) {
+            // call the internal save_post after all postmeta is written
+            $this->save_post($postObj->ID, $postObj, $update);
+            return $response;
+        };
+        // add a filter => after all callbacks are called (after update_additional_fields_for_object())
+        add_filter( 'rest_request_after_callbacks', $trigger_func, 10, 3 );
     }
     public function manualPublish($postId) {
       $postObj = get_post($postId);
@@ -88,7 +95,7 @@ class Core
                   //INSERT
                   $updateCols = ["post_type", "post_id"];
                   $updateVals = ["'" . $postType . "'", $postId];
-                  $updateInserValues = [];  
+                  $updateInserValues = [];
                   foreach ($finalFields as $key => $value) {
                       $updateCols[] =  $key;
                       $updateVals[] = $assoc_db[$key]['printf'];
@@ -127,7 +134,7 @@ class Core
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'flattable_' .  $postType;
-    
+
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql_columns = [];
