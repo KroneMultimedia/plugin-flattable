@@ -58,11 +58,17 @@ class Core
     public function save_post($postId, $postObject, $update)
     {
         global $wpdb;
+        $postType = false;
         if(!$postObject) {
-          $postType = $_POST["post_type"];
+          //postObject not set, check if $_POST has post_type
+          if(isset($_POST["post_type"])) {
+            $postType = $_POST["post_type"];
+          }
         } else {
+          //PostObject set
           $postType = $postObject->post_type;
         }
+        //Neither $postObject nor $_POST[post_type] set return here.
         if(!$postType) { 
             return;
         }
