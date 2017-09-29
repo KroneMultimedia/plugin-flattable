@@ -51,7 +51,15 @@ class Core
     public function save_post($postId, $postObject, $update)
     {
         global $wpdb;
-        if(!isset($_POST["post_type"])) return;
+        if(!$postObject) {
+          $postType = $_POST["post_type"];
+        } else {
+          $postType = $postObject->post_type;
+        }
+        if(!$postType) { 
+            return 
+        }
+
         $postType = $_POST["post_type"];
         $table_name = $wpdb->prefix . 'flattable_' .  $postType;
         //check if flattable is enabled for this post type.
