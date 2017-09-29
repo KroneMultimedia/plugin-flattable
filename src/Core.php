@@ -57,7 +57,7 @@ class Core
           $postType = $postObject->post_type;
         }
         if(!$postType) { 
-            return 
+            return;
         }
 
         $postType = $_POST["post_type"];
