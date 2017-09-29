@@ -67,7 +67,6 @@ class Core
             return;
         }
 
-        $postType = $_POST["post_type"];
         $table_name = $wpdb->prefix . 'flattable_' .  $postType;
         //check if flattable is enabled for this post type.
         $enabled = apply_filters('krn_flattable_enabled_' . $postType, false, $postObject, $postObject);
