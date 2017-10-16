@@ -17,6 +17,7 @@ class Core
     private function add_filters()
     {
         add_action('save_post', [$this, 'save_post'], 100, 3);
+        add_action('delete_post', [$this, 'delete_post'], 100, 3);
 
         add_action('krn_flattable_check_table', [$this, 'checkTable'], 10, 2);
         add_action('krn_flattable_publish', [$this, 'manualPublish'], 10);
@@ -54,6 +55,17 @@ class Core
       $postObj = get_post($postId);
       $_POST["post_type"] = $postObj->post_type;
       $this->save_post($postId, $postObj, true);
+    }
+    public function delete_post($postId) {
+        $postObj = get_post($postId);
+        $table_name = $wpdb->prefix . 'flattable_' .  $postObj->post_type;
+        //check if flattable is enabled for this post type.
+        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, false, $postObject, $postObject);
+        if ($enabled) {
+          do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObject);
+          $sql = "delete from " . $table_name . " where post_id=" . $postId;
+          $wpdb->query($sql);
+        }
     }
     public function save_post($postId, $postObject, $update)
     {
@@ -172,7 +184,9 @@ class Core
                                     WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
 
             if (empty($row)) {
+                $wpdb->suppress_errors(true);
                 $wpdb->query("ALTER TABLE $table_name ADD " . $column['column'] . " " . $column['type']);
+                $wpdb->suppress_errors(false);
             }
         }
 
