@@ -61,7 +61,7 @@ class Core
         $postObj = get_post($postId);
         $table_name = $wpdb->prefix . 'flattable_' .  $postObj->post_type;
         //check if flattable is enabled for this post type.
-        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, false, $postObject, $postObject);
+        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, false, $postObj, $postObj);
         if ($enabled) {
           do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
           $sql = "delete from " . $table_name . " where post_id=" . $postId;
