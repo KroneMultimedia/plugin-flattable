@@ -6,10 +6,18 @@
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
+        printerClass="Test\PrettyPrinter"
+        printerFile="tests/phpunit/PrettyPrinter.php"
+
 >
     <testsuites>
         <testsuite name="unit">
-            <directory suffix="Test.php">tests/phpunit/Unit</directory>
+            <directory prefix="test-" suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
+<filter>
+        <whitelist>
+          <directory>./src</directory>
+        </whitelist>
+    </filter>
 </phpunit>
