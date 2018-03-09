@@ -31,6 +31,22 @@ class TestFlattable extends \WP_UnitTestCase
         $this->assertNull($save);
     }
 
+    /**
+    * @test
+    */
+    public function checkTable()
+    {
+        $post_id = $this->factory->post->create(['post_type' => "test", 'post_content' => "test content"]);
+        $post = get_post($post_id);
+        $postType = $post->post_type;
+        $columns = [
+            ["column" => "post_id", "type" =>  "int(12)"],
+            ["column" => "post_type", "type" =>  "varchar(100)"],
+          ];
+        $check = $this->core->checkTable($postType, $columns);
+        $this->assertTrue($check);
+    }
+
     public function tearDown()
     {
         parent::tearDown();
