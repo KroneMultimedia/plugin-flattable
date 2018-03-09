@@ -1,14 +1,8 @@
 <?php
 /**
- * Class Tests_REST_API_Demo
- *
- * @package Rest_Api_Demo
- */
-/**
- * Testcases for the REST API demo plugin
- */
-
-namespace KMM\Flattable;
+* @covers KMM\Flattable\Core
+*/
+use KMM\Flattable\Core;
 
 class TestFlattable extends \WP_UnitTestCase
 {
@@ -16,16 +10,24 @@ class TestFlattable extends \WP_UnitTestCase
     {
         # setup a rest server
         parent::setUp();
-
         $this->core = new Core('i18n');
     }
 
-    public function test_save_post_no_post()
+    /**
+    * @test
+    */
+    public function rest_update_no_wp_post()
     {
-        $postId = 1;
-        $postObject = '';
-        $update = true;
-        $save = $this->core->save_post($postId, $postObject, $update);
+        $response = $this->core->rest_update(null, null, false);
+        $this->assertNull($response);
+    }
+
+    /**
+    * @test
+    */
+    public function save_post_no_post()
+    {
+        $save = $this->core->save_post(12, null, false);
         $this->assertNull($save);
     }
 
