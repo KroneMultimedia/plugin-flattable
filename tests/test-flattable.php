@@ -4,6 +4,15 @@
 */
 use KMM\Flattable\Core;
 
+class FlattableTestDB
+{
+    public $prefix = "wptest";
+
+    public function query($sql)
+    {
+    }
+}
+
 class TestFlattable extends \WP_UnitTestCase
 {
     public function setUp()
@@ -25,6 +34,30 @@ class TestFlattable extends \WP_UnitTestCase
     /**
     * @test
     */
+    public function delete_post_not_enabled_post()
+    {
+        $post_id = $this->factory->post->create(['post_type' => "test"]);
+
+        //Mock the DB
+        $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
+        ->setMethods(array( 'query' ))
+        ->getMock();
+
+        $mock->prefix = "wptest";
+
+        //Expect query not sent
+        $mock->expects($this->never())
+            ->method('query')
+            ->with("delete from wptestflattable_test where post_id=" . $post_id);
+
+        $this->core->wpdb = $mock;
+
+        $this->core->delete_post($post_id);
+    }
+
+    /**
+    * @test
+    */
     public function save_post_no_post()
     {
         $save = $this->core->save_post(12, null, false);
@@ -36,7 +69,7 @@ class TestFlattable extends \WP_UnitTestCase
     */
     public function checkTable()
     {
-        $post_id = $this->factory->post->create(['post_type' => "test", 'post_content' => "test content"]);
+        $post_id = $this->factory->post->create(['post_type' => "test"]);
         $post = get_post($post_id);
         $postType = $post->post_type;
         $columns = [
