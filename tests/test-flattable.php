@@ -42,7 +42,7 @@ class TestFlattable extends \WP_UnitTestCase
         $columns = [
             ["column" => "post_id", "type" =>  "int(12)"],
             ["column" => "post_type", "type" =>  "varchar(100)"],
-          ];
+        ];
         $check = $this->core->checkTable($postType, $columns);
         $this->assertTrue($check);
     }
