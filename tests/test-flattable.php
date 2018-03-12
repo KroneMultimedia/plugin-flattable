@@ -3,6 +3,7 @@
 * @covers KMM\Flattable\Core
 */
 use KMM\Flattable\Core;
+use phpmock\MockBuilder;
 
 class FlattableTestDB
 {
@@ -12,6 +13,9 @@ class FlattableTestDB
     {
     }
     public function get_results($r)
+    {
+    }
+    public function prepare($data)
     {
     }
 }
@@ -54,7 +58,46 @@ class TestFlattable extends \WP_UnitTestCase
 
         $this->core->wpdb = $mock;
 
-        $this->core->delete_post($post_id);
+        $this->core->delete_post($post_id, false);
+    }
+
+    /**
+    * @test
+    */
+    public function delete_post()
+    {
+        $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
+        $postObj = get_post($post_id);
+
+        //Mock the DB
+        $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
+            ->setMethods(array( 'query' ))
+            ->getMock();
+
+        $mock->prefix = "wptest";
+
+        //Expect query sent
+        $mock->expects($this->once())
+            ->method('query')
+            ->with('delete from wptestflattable_article where post_id=' . $post_id);
+
+        $this->core->wpdb = $mock;
+
+        //Check if krn_flattable_pre_delete action is called correctly
+        $add_action = new MockBuilder();
+        $cp = $this;
+        $add_action->setNamespace("\KMM\Flattable")
+                ->setName('do_action')
+                ->setFunction(function ($a, $b) use ($cp) {
+                    $cp->assertEquals($a, "krn_flattable_pre_delete_article");
+                    return $a;
+                });
+        $add_action_mock =  $add_action->build();
+        $add_action_mock->enable();
+
+        $this->core->delete_post($post_id, true);
+
+        $add_action_mock->disable();
     }
 
     /**
@@ -62,7 +105,7 @@ class TestFlattable extends \WP_UnitTestCase
     */
     public function save_post_no_post()
     {
-        $save = $this->core->save_post(12, null, false);
+        $save = $this->core->save_post(12, null, false, false);
         $this->assertNull($save);
     }
 
