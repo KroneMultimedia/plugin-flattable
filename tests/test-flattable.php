@@ -46,7 +46,7 @@ class TestFlattable extends \WP_UnitTestCase
         $post_id = $this->factory->post->create(['post_type' => "test"]);
 
         //Mock the DB
-        $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
+        $mock = $this->getMockBuilder('KMM\\Flattable\\KMM\\FlattableTestDB')
             ->setMethods(array( 'query' ))
             ->getMock();
 
@@ -88,7 +88,7 @@ class TestFlattable extends \WP_UnitTestCase
         $cp = $this;
         $add_action->setNamespace("\KMM\Flattable")
                 ->setName('do_action')
-                ->setFunction(function ($a, $b) use ($cp) {
+                ->setFunction(function ($a) use ($cp) {
                     $cp->assertEquals($a, "krn_flattable_pre_delete_article");
                     return $a;
                 });
@@ -107,6 +107,31 @@ class TestFlattable extends \WP_UnitTestCase
     {
         $save = $this->core->save_post(12, null, false, false);
         $this->assertNull($save);
+    }
+
+    /**
+    * @test
+    */
+    public function save_post_insert_update()
+    {
+        $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
+        $postObject = get_post($post_id);
+
+        //Mock the DB
+        $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
+            ->setMethods(array( 'query', 'get_charset_collate', 'get_results', 'suppress_errors', 'get_row', 'prepare' ))
+            ->getMock();
+
+        $mock->prefix = "wptest";
+
+        //Expect query sent
+        $mock->expects($this->exactly(3))
+            ->method('query')
+            ->withConsecutive(['ALTER TABLE wptestflattable_article ADD post_id int(12)'], ['ALTER TABLE wptestflattable_article ADD post_type varchar(100)']);
+
+        $this->core->wpdb = $mock;
+
+        $this->core->save_post($post_id, $postObject, false, true);
     }
 
     /**
@@ -136,7 +161,8 @@ class TestFlattable extends \WP_UnitTestCase
 
         // Expect query sent
         $mock->expects($this->exactly(2))
-            ->method('query');
+            ->method('query')
+            ->withConsecutive(['ALTER TABLE wptestflattable_test ADD post_id int(12)'], ['ALTER TABLE wptestflattable_test ADD post_type varchar(100)']);
 
         //Expect query sent
         $mock->expects($this->any())
