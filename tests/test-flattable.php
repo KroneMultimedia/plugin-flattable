@@ -41,7 +41,7 @@ class TestFlattable extends \WP_UnitTestCase
     /**
     * @test
     */
-    public function delete_post_not_enabled_post()
+    public function delete_not_enabled_post()
     {
         $post_id = $this->factory->post->create(['post_type' => "test"]);
 
@@ -64,7 +64,7 @@ class TestFlattable extends \WP_UnitTestCase
     /**
     * @test
     */
-    public function delete_post()
+    public function delete_enabled_post()
     {
         $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
         $postObj = get_post($post_id);
@@ -112,7 +112,7 @@ class TestFlattable extends \WP_UnitTestCase
     /**
     * @test
     */
-    public function save_post_insert_update()
+    public function save_enabled_post_insert_update()
     {
         $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
         $postObject = get_post($post_id);
