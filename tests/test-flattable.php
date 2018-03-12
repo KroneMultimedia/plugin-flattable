@@ -11,6 +11,9 @@ class FlattableTestDB
     public function query($sql)
     {
     }
+    public function get_results($r)
+    {
+    }
 }
 
 class TestFlattable extends \WP_UnitTestCase
@@ -40,15 +43,14 @@ class TestFlattable extends \WP_UnitTestCase
 
         //Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
-        ->setMethods(array( 'query' ))
-        ->getMock();
+            ->setMethods(array( 'query' ))
+            ->getMock();
 
         $mock->prefix = "wptest";
 
         //Expect query not sent
         $mock->expects($this->never())
-            ->method('query')
-            ->with("delete from wptestflattable_test where post_id=" . $post_id);
+            ->method('query');
 
         $this->core->wpdb = $mock;
 
@@ -76,6 +78,30 @@ class TestFlattable extends \WP_UnitTestCase
             ["column" => "post_id", "type" =>  "int(12)"],
             ["column" => "post_type", "type" =>  "varchar(100)"],
         ];
+
+        //Mock the DB
+        $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
+            ->setMethods(array( 'get_charset_collate', 'get_results', 'suppress_errors', 'query' ))
+            ->getMock();
+
+        $mock->prefix = "wptest";
+
+        //Expect query sent
+        $mock->expects($this->any())
+            ->method('suppress_errors')
+            ->willReturn(true);
+
+        // Expect query sent
+        $mock->expects($this->exactly(2))
+            ->method('query');
+
+        //Expect query sent
+        $mock->expects($this->any())
+            ->method('suppress_errors')
+            ->willReturn(false);
+
+        $this->core->wpdb = $mock;
+
         $check = $this->core->checkTable($postType, $columns);
         $this->assertTrue($check);
     }
