@@ -58,18 +58,18 @@ class Core
       $_POST["post_type"] = $postObj->post_type;
       $this->save_post($postId, $postObj, true);
     }
-    public function delete_post($postId) {
+    public function delete_post($postId, $state = false) {
         $postObj = get_post($postId);
         $table_name = $this->wpdb->prefix . 'flattable_' .  $postObj->post_type;
         //check if flattable is enabled for this post type.
-        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, false, $postObj, $postObj);
+        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, $state, $postObj, $postObj);
         if ($enabled) {
           do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
           $sql = "delete from " . $table_name . " where post_id=" . $postId;
           $this->wpdb->query($sql);
         }
     }
-    public function save_post($postId, $postObject, $update)
+    public function save_post($postId, $postObject, $update, $state = false)
     {
         $postType = false;
         if(!$postObject) {
@@ -88,7 +88,7 @@ class Core
 
         $table_name = $this->wpdb->prefix . 'flattable_' .  $postType;
         //check if flattable is enabled for this post type.
-        $enabled = apply_filters('krn_flattable_enabled_' . $postType, false, $postObject, $postObject);
+        $enabled = apply_filters('krn_flattable_enabled_' . $postType, $state, $postObject, $postObject);
         if ($enabled) {
            //We are in flattable enabled mode.
           //get a list of columns.
