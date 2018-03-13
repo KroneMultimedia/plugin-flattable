@@ -7,7 +7,7 @@ Unit Test:
   dependencies: []
   image: gitlab.krone.at:5000/krn/backend:beta
   tags:
-    - nodejs
+    - docker
   services:
     - mysql:latest
   stage: tests
@@ -30,11 +30,12 @@ Unit Test:
 
 release:publish:
   dependencies: []
+  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
   stage: release_publish
   script:
   - fastlane publish_release
   tags:
-  - linux-native
+  - docker
   only:
   - release
   - fastlane
