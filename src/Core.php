@@ -10,6 +10,8 @@ class Core
     private $plugin_dir;
     public function __construct()
     {
+        global $wpdb;
+        $this->wpdb = $wpdb;
         $this->plugin_dir = plugin_dir_url(__FILE__) . '../';
         $this->add_filters();
     }
@@ -56,21 +58,19 @@ class Core
       $_POST["post_type"] = $postObj->post_type;
       $this->save_post($postId, $postObj, true);
     }
-    public function delete_post($postId) {
-      global $wpdb;
+    public function delete_post($postId, $state = false) {
         $postObj = get_post($postId);
-        $table_name = $wpdb->prefix . 'flattable_' .  $postObj->post_type;
+        $table_name = $this->wpdb->prefix . 'flattable_' .  $postObj->post_type;
         //check if flattable is enabled for this post type.
-        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, false, $postObj, $postObj);
+        $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, $state, $postObj, $postObj);
         if ($enabled) {
           do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
           $sql = "delete from " . $table_name . " where post_id=" . $postId;
-          $wpdb->query($sql);
+          $this->wpdb->query($sql);
         }
     }
-    public function save_post($postId, $postObject, $update)
+    public function save_post($postId, $postObject, $update, $state = false)
     {
-        global $wpdb;
         $postType = false;
         if(!$postObject) {
           //postObject not set, check if $_POST has post_type
@@ -82,13 +82,13 @@ class Core
           $postType = $postObject->post_type;
         }
         //Neither $postObject nor $_POST[post_type] set return here.
-        if(!$postType) { 
+        if(!$postType) {
             return;
         }
 
-        $table_name = $wpdb->prefix . 'flattable_' .  $postType;
+        $table_name = $this->wpdb->prefix . 'flattable_' .  $postType;
         //check if flattable is enabled for this post type.
-        $enabled = apply_filters('krn_flattable_enabled_' . $postType, false, $postObject, $postObject);
+        $enabled = apply_filters('krn_flattable_enabled_' . $postType, $state, $postObject, $postObject);
         if ($enabled) {
            //We are in flattable enabled mode.
           //get a list of columns.
@@ -110,7 +110,7 @@ class Core
 
               $finalFields = apply_filters('krn_flattable_values_' . $postType, [], $postObject);
 
-              $checkRow = $wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
+              $checkRow = $this->wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
               //if we have already a published record, update it
               $update = true;
               if(!$checkRow) {
@@ -128,8 +128,8 @@ class Core
                       $updateInserValues[] = $value;
                   }
                   $sql = " insert into $table_name (" .  join(",", $updateCols) . ") VALUES(" . join(",", $updateVals) . ")";
-                  $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $updateInserValues));
-                  $wpdb->query($query);
+                  $query = call_user_func_array(array($this->wpdb, 'prepare'), array_merge(array($sql), $updateInserValues));
+                  $this->wpdb->query($query);
 
               } else {
                   //UPDATE
@@ -147,8 +147,8 @@ class Core
                   $updateVals[] = $postId;
 
                   $sql = "update $table_name SET " . join(",", $updateCols) . " WHERE post_id = %d";
-                  $query = call_user_func_array(array($wpdb, 'prepare'), array_merge(array($sql), $updateVals));
-                  $wpdb->query($query);
+                  $query = call_user_func_array(array($this->wpdb, 'prepare'), array_merge(array($sql), $updateVals));
+                  $this->wpdb->query($query);
               }
 
               do_action('krn_flattable_post_write_' . $postType, $postObject);
@@ -157,11 +157,9 @@ class Core
     }
     public function checkTable($postType, $columns)
     {
-        global $wpdb;
+        $table_name = $this->wpdb->prefix . 'flattable_' .  $postType;
 
-        $table_name = $wpdb->prefix . 'flattable_' .  $postType;
-
-        $charset_collate = $wpdb->get_charset_collate();
+        $charset_collate = $this->wpdb->get_charset_collate();
 
         $sql_columns = [];
         foreach ($columns as $column) {
@@ -181,13 +179,13 @@ class Core
 
         //Check columns
         foreach ($columns as $column) {
-            $row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            $row = $this->wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
                                     WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
 
             if (empty($row)) {
-                $wpdb->suppress_errors(true);
-                $wpdb->query("ALTER TABLE $table_name ADD " . $column['column'] . " " . $column['type']);
-                $wpdb->suppress_errors(false);
+                $this->wpdb->suppress_errors(true);
+                $this->wpdb->query("ALTER TABLE $table_name ADD " . $column['column'] . " " . $column['type']);
+                $this->wpdb->suppress_errors(false);
             }
         }
 
