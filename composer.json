@@ -9,14 +9,10 @@
   },
   "repositories": [{
     "type": "gitlab",
-    "url": "http://gitlab.krone.at/WordPress/mu-plugin-core.git"
-  }, {
-    "type": "gitlab",
     "url": "http://gitlab.krone.at/WordPress/mu-plugin-acf-extension.git"
   }],
   "require": {
     "php": ">=7.0.0",
-    "wordpress/mu-plugin-core": "0.*",
     "wordpress/mu-plugin-acf-extension": "0.*",
     "composer/installers": "~1.0"
   },
