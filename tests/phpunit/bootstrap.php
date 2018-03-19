@@ -33,7 +33,6 @@ tests_add_filter( 'muplugins_loaded', [$this, '_manually_load_plugin'] );
 require $_tests_dir . '/includes/bootstrap.php';
   }
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/../wp-content/mu-plugins/kmm-core/kmm-core.php';
 	require dirname( dirname( __FILE__ ) ) . '../../kmm-flattable.php';
 }
 
