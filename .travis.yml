@@ -28,10 +28,6 @@ script:
 jobs:
   include:
 
-    - stage: Test
-      php: 7.1
-
-
     - stage: Code Style
       script: 
         - composer cs-check
