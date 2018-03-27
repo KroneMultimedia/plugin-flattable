@@ -27,14 +27,16 @@ script:
 
 jobs:
   include:
+
     - stage: Test
-    - stage: Code style and static analysis
-      script:
-        - composer phpstan
-      env: PHPSTAN=true
-    - script: 
+      php: 7.1
+
+
+    - stage: Code Style
+      script: 
         - composer cs-check
       env: CS-FIXER=true
+
     - stage: coverage
       script: 
         - phpdbg -qrr vendor/bin/phpunit --coverage-clover clover.xml
