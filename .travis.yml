@@ -1,0 +1,39 @@
+language: php
+sudo: false
+dist: trusty
+
+php:
+  - 7.1
+  - 7.2
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - composer self-update
+  - composer global require hirak/prestissimo
+
+install: 
+  - travis_retry travis_wait composer install --no-interaction 
+
+script:
+  - phpunit -v
+
+jobs:
+  include:
+    - stage: Test
+      php: 7.2
+    - stage: Code style and static analysis
+      script:
+        - composer phpstan
+      env: PHPSTAN=true
+    - script: 
+        - composer cs-check
+      env: CS-FIXER=true
+    - stage: coverage
+      script: 
+        - phpdbg -qrr vendor/bin/phpunit --coverage-clover clover.xml
+      after_success:
+        - vendor/bin/ocular code-coverage:upload --format=php-clover clover.xml --revision=$TRAVIS_COMMIT
