@@ -6,7 +6,7 @@
  * Version:     1.0.0
  * Author:      Krone.at
  * Author URI:  http://www.krone.at
- * Licence:     GPLv3
+ * Licence:     MIT
  * Text Domain: kmm-flattable
  * Domain Path: /languages
  */
