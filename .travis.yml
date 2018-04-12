@@ -36,7 +36,7 @@ deploy:
     on:
       php: 7.2
       tags: true
-      repo: KroneMultimedia/plugin-timeshift
+      repo: KroneMultimedia/plugin-flattable
     slug:  $WORDPRESS_PLUGIN_SLUG
     username: $WORDPRESS_ORG_USERNAME
     password: $WORDPRESS_ORG_PASSWORD
