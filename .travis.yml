@@ -25,6 +25,24 @@ install:
 script:
   -  vendor/phpunit/phpunit/phpunit -v
 
+before_deploy:
+  - rm -vfr .git
+  - composer --no-dev --verbose --optimize-autoloader --prefer-dist install
+deploy:
+  - provider: wordpress-plugin
+    edge:
+      source: TypistTech/dpl
+      branch: add-wordpress-plugin-deployment
+    on:
+      php: 7.2
+      tags: true
+      repo: KroneMultimedia/plugin-timeshift
+    slug:  $WORDPRESS_PLUGIN_SLUG
+    username: $WORDPRESS_ORG_USERNAME
+    password: $WORDPRESS_ORG_PASSWORD
+    build_dir: .
+
+
 jobs:
   include:
 
