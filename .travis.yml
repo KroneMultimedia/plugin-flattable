@@ -49,6 +49,8 @@ jobs:
       env: CS-FIXER=true
 
     - stage: coverage
+        on:
+          php: 7.1
       script: 
         - phpdbg -qrr vendor/bin/phpunit --coverage-clover clover.xml
       after_success:
