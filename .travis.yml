@@ -2,9 +2,19 @@ language: php
 sudo: false
 dist: trusty
 
+stages:
+  - test
+  - style
+  - coverage
+  - deploy
+
+
+env:
+  - WP_VERSION=latest
+  - WP_VERSION=trunk
 php:
-  - 7.1
   - 7.2
+  - 7.1
 
 services:
   - mysql
@@ -17,36 +27,23 @@ before_install:
   - phpenv config-rm xdebug.ini
   - composer self-update
   - composer global require hirak/prestissimo
-  - bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1 latest
-
-install: 
+  - bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1 $WP_VERSION
   - travis_retry travis_wait composer install --no-interaction 
 
-script:
-  -  vendor/phpunit/phpunit/phpunit -v
 
 before_deploy:
   - rm -vfr .git
   - composer --no-dev --verbose --optimize-autoloader --prefer-dist install
-deploy:
-  - provider: wordpress-plugin
-    edge:
-      source: TypistTech/dpl
-      branch: add-wordpress-plugin-deployment
-    on:
-      php: 7.2
-      tags: true
-      repo: KroneMultimedia/plugin-flattable
-    slug:  $WORDPRESS_PLUGIN_SLUG
-    username: $WORDPRESS_ORG_USERNAME
-    password: $WORDPRESS_ORG_PASSWORD
-    build_dir: .
+
+# travis launches phpunit itself in the testing stage according to php setups
+# test stage script
+script:
+  - vendor/phpunit/phpunit/phpunit -v --colors=always
 
 
 jobs:
   include:
-
-    - stage: Code Style
+    - stage: style
       script: 
         - composer cs-check
       env: CS-FIXER=true
@@ -56,3 +53,21 @@ jobs:
         - phpdbg -qrr vendor/bin/phpunit --coverage-clover clover.xml
       after_success:
         - vendor/bin/ocular code-coverage:upload --format=php-clover clover.xml --revision=$TRAVIS_COMMIT
+
+    - stage: deploy
+      script: skip
+      deploy:
+        - provider: wordpress-plugin
+          edge:
+            source: TypistTech/dpl
+            branch: add-wordpress-plugin-deployment
+          on:
+            php: 7.2
+            tags: true
+            repo: KroneMultimedia/plugin-flattable
+          slug:  $WORDPRESS_PLUGIN_SLUG
+          username: $WORDPRESS_ORG_USERNAME
+          password: $WORDPRESS_ORG_PASSWORD
+          build_dir: .
+
+
