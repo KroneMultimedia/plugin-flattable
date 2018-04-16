@@ -2,6 +2,7 @@
 stages:
 - tests
 - release_publish
+- github
 
 Unit Test:
   dependencies: []
@@ -83,9 +84,9 @@ release:publish:
 release:publish:wp:
   image: gitlab.krone.at:5000/krn/fastlane_runner:latest
   dependencies: []
-  stage: release_publish
+  stage: github
   script:
-  - bin/deploy-to-wp.sh $CI_COMMIT_REF_NAME kmm-flattable
+  - fastlane wp_github
   tags:
   - docker
   only:
