@@ -11,7 +11,6 @@ Provides a simple API to publish a post including post meta to a simple flattabl
 
 |         | Features  |
 ----------|-----------|
-| :innocent:   | Configuration works out of the box  for all post types |
 | :sweat_smile:| Built for large WordPress installations |
 | :thumbsup:   | Clean  API |
 | :crown: | Supported and battle tested @krone.at |
