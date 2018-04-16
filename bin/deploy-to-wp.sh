@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -x
 
 # Install the dependencies (as defined in the composer.lock) first so we can package them up
 composer install --no-dev --optimize-autoloader --no-interaction
@@ -19,7 +20,7 @@ rm -rf /tmp/tmp_folder-svn
 svn co http://plugins.svn.wordpress.org/$KRN_REPO_SLUG/ /tmp/tmp_folder-svn
 
 echo "Copying files to trunk"
-rsync -Rrd --delete --exclude 'release.sh' --exclude ".*" ./ /tmp/tmp_folder-svn/trunk/
+rsync -Rrd --delete  ./ /tmp/tmp_folder-svn/trunk/
 
 cd /tmp/tmp_folder-svn/
 
