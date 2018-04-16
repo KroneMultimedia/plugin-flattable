@@ -90,7 +90,6 @@ release:publish:wp:
   - docker
   only:
   - master
-b
 
 before_script:
 - eval $(ssh-agent -s)
