@@ -3,7 +3,7 @@
  * Plugin Name: KMM Flattable
  * Description: This is a short description of what the plugin does.
  * Plugin URI:  http://github.com/KroneMultiMedia/plugin-flattable
- * Version:     %TRAVIS_TAG%
+ * Version:     v9.9.9
  * Author:      Krone.at
  * Author URI:  http://www.krone.at
  * Licence:     MIT

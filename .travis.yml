@@ -31,11 +31,6 @@ before_install:
   - travis_retry travis_wait composer install --no-interaction 
 
 
-before_deploy:
-  - rm -vfr .git
-  - export TRAVIS_TAG_CLEAN=$(echo ${TRAVIS_TAG/gh/});
-  - sed -i "s/%TRAVIS_TAG%/$TRAVIS_TAG_CLEAN/g" kmm-flattable.php
-  - composer --no-dev --verbose --optimize-autoloader --prefer-dist install
 
 # travis launches phpunit itself in the testing stage according to php setups
 # test stage script
@@ -56,20 +51,5 @@ jobs:
         - phpdbg -qrr vendor/bin/phpunit --coverage-clover clover.xml
       after_success:
         - vendor/bin/ocular code-coverage:upload --format=php-clover clover.xml --revision=$TRAVIS_COMMIT
-
-    - stage: deploy
-      script: skip
-      deploy:
-        - provider: wordpress-plugin
-          edge:
-            source: TypistTech/dpl
-            branch: add-wordpress-plugin-deployment
-          on:
-            tags: true
-            repo: KroneMultimedia/plugin-flattable
-          slug:  $WORDPRESS_PLUGIN_SLUG
-          username: $WORDPRESS_ORG_USERNAME
-          password: $WORDPRESS_ORG_PASSWORD
-          build_dir: .
 
 
