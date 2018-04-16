@@ -73,7 +73,7 @@ class Core
             do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
             $customCols = apply_filters('krn_flattable_columns_' . $postObj->post_type, [], $postObj);
             //check if there are any other than required columns, we dont need an "empty" table
-            if(empty($customCols)) {
+            if (empty($customCols)) {
                 return;
             }
             $sql = 'delete from ' . $table_name . ' where post_id=' . $postId;
@@ -112,7 +112,7 @@ class Core
             $columns = array_merge($defaultCols, $customCols);
             do_action('krn_flattable_pre_write_' . $postType, $columns, $postObject);
             //check if there are any other than required columns, we dont need an "empty" table
-            if(empty($customCols)) {
+            if (empty($customCols)) {
                 return;
             }
             //check if table exists, and if table has atleast required columns
