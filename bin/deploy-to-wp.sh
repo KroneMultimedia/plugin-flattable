@@ -11,6 +11,9 @@ composer install --no-dev --optimize-autoloader --no-interaction
 version=$1
 KRN_REPO_SLUG=$2
 
+apt-get update -y
+apt-get install -y rsync
+
 sed -i "s/v9.9.9/$version/g" ${KRN_REPO_SLUG}.php
 
 # Cleanup the old dir if it is there
