@@ -33,7 +33,8 @@ before_install:
 
 before_deploy:
   - rm -vfr .git
-  - sed -i "s/%TRAVIS_TAG%/$TRAVIS_BRANCH/g" kmm-flattable.php
+  - export TRAVIS_TAG_CLEAN=$(echo ${TRAVIS_TAG/gh/});
+  - sed -i "s/%TRAVIS_TAG%/$TRAVIS_TAG_CLEAN/g" kmm-flattable.php
   - composer --no-dev --verbose --optimize-autoloader --prefer-dist install
 
 # travis launches phpunit itself in the testing stage according to php setups
@@ -64,9 +65,7 @@ jobs:
             source: TypistTech/dpl
             branch: add-wordpress-plugin-deployment
           on:
-            all_branches: true
-            condition: "$TRAVIS_BRANCH =~ ^v[0-9]+.[0-9]+.[0-9]+$"
-            php: 7.2
+            tags: true
             repo: KroneMultimedia/plugin-flattable
           slug:  $WORDPRESS_PLUGIN_SLUG
           username: $WORDPRESS_ORG_USERNAME
