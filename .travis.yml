@@ -64,8 +64,10 @@ jobs:
             source: TypistTech/dpl
             branch: add-wordpress-plugin-deployment
           on:
-            php: 7.2
             tags: true
+            all_branches: true
+            condition: "$TRAVIS_BRANCH =~ ^v[0-9]+\.[0-9]+\.[0-9]+$"
+            php: 7.2
             repo: KroneMultimedia/plugin-flattable
           slug:  $WORDPRESS_PLUGIN_SLUG
           username: $WORDPRESS_ORG_USERNAME
