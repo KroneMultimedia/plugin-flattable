@@ -27,6 +27,14 @@ class TestFlattable extends \WP_UnitTestCase
         # setup a rest server
         parent::setUp();
         $this->core = new Core('i18n');
+        add_filter('krn_flattable_values_article', function() {
+              return ['x' => 1 ];
+        });
+        add_filter('krn_flattable_columns_article', function() {
+              return [
+			          ["column" => "x", "type" => "int(1)", "printf" => "%d"]
+              ];
+        });
     }
 
     /**
@@ -125,9 +133,9 @@ class TestFlattable extends \WP_UnitTestCase
         $mock->prefix = "wptest";
 
         //Expect query sent
-        $mock->expects($this->exactly(3))
+        $mock->expects($this->exactly(4))
             ->method('query')
-            ->withConsecutive(['ALTER TABLE wptestflattable_article ADD post_id int(12)'], ['ALTER TABLE wptestflattable_article ADD post_type varchar(100)']);
+            ->withConsecutive(['ALTER TABLE wptestflattable_article ADD post_id int(12)'], ['ALTER TABLE wptestflattable_article ADD post_type varchar(100)'], ['ALTER TABLE wptestflattable_article ADD x int(1)']);
 
         $this->core->wpdb = $mock;
 
