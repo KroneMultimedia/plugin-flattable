@@ -33,7 +33,7 @@ before_install:
 
 before_deploy:
   - rm -vfr .git
-  - sed -i "s/%TRAVIS_TAG%/$TRAVIS_TAG/g" kmm-timeshift.php
+  - sed -i "s/%TRAVIS_TAG%/$TRAVIS_TAG/g" kmm-flattable.php
   - composer --no-dev --verbose --optimize-autoloader --prefer-dist install
 
 # travis launches phpunit itself in the testing stage according to php setups
