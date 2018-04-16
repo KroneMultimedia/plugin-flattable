@@ -71,6 +71,11 @@ class Core
         $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, $state, $postObj, $postObj);
         if ($enabled) {
             do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
+            $customCols = apply_filters('krn_flattable_columns_' . $postObj->post_type, [], $postObj);
+            //check if there are any other than required columns, we dont need an "empty" table
+            if(empty($customCols)) {
+                return;
+            }
             $sql = 'delete from ' . $table_name . ' where post_id=' . $postId;
             $this->wpdb->query($sql);
         }
@@ -100,12 +105,16 @@ class Core
             //We are in flattable enabled mode.
             //get a list of columns.
             $defaultCols = [
-            ['column' => 'post_id', 'type' => 'int(12)'],
-            ['column' => 'post_type', 'type' => 'varchar(100)'],
-          ];
-            $columns = apply_filters('krn_flattable_columns_' . $postType, [], $postObject);
-            $columns = array_merge($defaultCols, $columns);
+                ['column' => 'post_id', 'type' => 'int(12)'],
+                ['column' => 'post_type', 'type' => 'varchar(100)'],
+            ];
+            $customCols = apply_filters('krn_flattable_columns_' . $postType, [], $postObject);
+            $columns = array_merge($defaultCols, $customCols);
             do_action('krn_flattable_pre_write_' . $postType, $columns, $postObject);
+            //check if there are any other than required columns, we dont need an "empty" table
+            if(empty($customCols)) {
+                return;
+            }
             //check if table exists, and if table has atleast required columns
             if ($this->checkTable($postType, $columns)) {
                 $db_cols = [];
@@ -176,10 +185,10 @@ class Core
         $column_string = join(',', $sql_columns);
 
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
-		              id int(12) NOT NULL AUTO_INCREMENT,
-                  $column_string
-		              ,PRIMARY KEY  (id)
-	        ) $charset_collate;";
+            id int(12) NOT NULL AUTO_INCREMENT,
+            $column_string
+            ,PRIMARY KEY (id)
+        ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         $a = dbDelta($sql);
@@ -187,7 +196,7 @@ class Core
         //Check columns
         foreach ($columns as $column) {
             $row = $this->wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-                                    WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
+                WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
 
             if (empty($row)) {
                 $this->wpdb->suppress_errors(true);
