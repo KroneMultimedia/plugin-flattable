@@ -101,6 +101,7 @@ github update:
   dependencies: ["release:publish"]
   stage: github.com
   script:
+  - export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
   - git remote add github git@github.com:KroneMultimedia/plugin-flattable
   - git push github --tags
   - git push github --all
