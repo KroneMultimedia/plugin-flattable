@@ -79,6 +79,22 @@ release:publish:
   - fastlane
   - beta
   - master
+
+release:publish:wp:
+  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
+  dependencies: []
+  stage: release_publish
+  script:
+  - bin/deploy-to-wp.sh $CI_COMMIT_REF_NAME kmm-flattable
+  tags:
+  - docker
+  only:
+  - master
+b
+
 before_script:
 - eval $(ssh-agent -s)
 - ssh-add <(echo "$SSH_DEPLOY_KEY")
+
+
+
