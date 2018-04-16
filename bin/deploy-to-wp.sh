@@ -35,7 +35,7 @@ echo "Creating release tag"
 
 mkdir /tmp/tmp_folder-svn/tags/${version}
 svn add /tmp/tmp_folder-svn/tags/${version}
-svn commit -m "Creating tag for v${version}"
+svn commit --username $WP_ORG_USERNAME --password $WP_ORG_PASSWORD  -m "Creating tag for v${version}"
 
 echo "Copying versioned files to v${version} tag"
 

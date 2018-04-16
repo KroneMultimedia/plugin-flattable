@@ -3,6 +3,7 @@ stages:
 - tests
 - release_publish
 - wordpress.org
+- github.com
 
 Unit Test:
   dependencies: []
@@ -94,6 +95,20 @@ svn update:
   - docker
   only:
   - master
+
+github update:
+  image: gitlab.krone.at:5000/krn/backend:beta
+  dependencies: ["release:publish"]
+  stage: github.com
+  script:
+  - git remote add github git@github.com:KroneMultimedia/plugin-flattable
+  - git push -u github master
+  tags:
+  - docker
+  only:
+  - master
+
+
 
 before_script:
 - eval $(ssh-agent -s)
