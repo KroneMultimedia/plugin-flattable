@@ -2,7 +2,7 @@
 stages:
 - tests
 - release_publish
-- github
+- wordpress.org
 
 Unit Test:
   dependencies: []
@@ -81,10 +81,10 @@ release:publish:
   - beta
   - master
 
-release:publish:wp:
-  image: gitlab.krone.at:5000/krn/backend:latest
+svn update:
+  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
   dependencies: []
-  stage: github
+  stage: wordpress.org
   script:
   - fastlane wp_github repo:kmm-flattable
   tags:
