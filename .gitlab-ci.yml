@@ -68,7 +68,7 @@ tests:phpcompatibility:
 
 
 release:publish:
-  image: gitlab.krone.at:5000/krn/backend:beta
+  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
   dependencies: []
   stage: release_publish
   script:
@@ -85,7 +85,7 @@ release:publish:
   - master
 
 svn update:
-  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
+  image: gitlab.krone.at:5000/krn/backend:beta
   dependencies: ["release:publish"]
   stage: wordpress.org
   script:
