@@ -27,7 +27,7 @@ rsync -Rrd --delete  ./ /tmp/tmp_folder-svn/trunk/
 
 cd /tmp/tmp_folder-svn/
 
-rm -vfr .git
+rm -vfr trunk/.git
 svn status | grep '^!' | awk '{print $2}' | xargs svn delete
 svn add --force * --auto-props --parents --depth infinity -q
 
