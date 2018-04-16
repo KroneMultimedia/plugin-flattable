@@ -82,11 +82,11 @@ release:publish:
   - master
 
 release:publish:wp:
-  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
+  image: gitlab.krone.at:5000/krn/backend:latest
   dependencies: []
   stage: github
   script:
-  - fastlane wp_github
+  - fastlane wp_github repo:kmm-flattable
   tags:
   - docker
   only:
