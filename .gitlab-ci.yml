@@ -68,11 +68,14 @@ tests:phpcompatibility:
 
 
 release:publish:
-  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
+  image: gitlab.krone.at:5000/krn/backend:beta
   dependencies: []
   stage: release_publish
   script:
   - fastlane publish_release
+  artifacts:
+    paths:
+      - latest_release.txt 
   tags:
   - docker
   only:
@@ -83,10 +86,10 @@ release:publish:
 
 svn update:
   image: gitlab.krone.at:5000/krn/fastlane_runner:latest
-  dependencies: []
+  dependencies: ["release:publish"]
   stage: wordpress.org
   script:
-  - fastlane wp_github repo:kmm-flattable
+  - bin/deploy-to-wp.sh $(cat latest_release.txt) kmm-flattable
   tags:
   - docker
   only:
