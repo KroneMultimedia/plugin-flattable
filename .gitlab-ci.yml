@@ -11,7 +11,7 @@ Unit Test:
   tags:
     - docker
   services:
-    - mysql:latest
+    - mysql:5.7
   stage: tests
   variables:
     # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
@@ -76,7 +76,7 @@ release:publish:
   - fastlane publish_release
   artifacts:
     paths:
-      - latest_release.txt 
+      - latest_release.txt
   tags:
   - docker
   only:
