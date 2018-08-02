@@ -96,21 +96,6 @@ svn update:
   only:
   - master
 
-github update:
-  image: gitlab.krone.at:5000/krn/backend:beta
-  dependencies: ["release:publish"]
-  stage: github.com
-  script:
-  - export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-  - git remote rm github || true
-  - git remote add github git@github.com:KroneMultimedia/plugin-flattable
-  - git push github --tags
-  - git push github --all
-  tags:
-  - docker
-  only:
-  - master
-
 
 
 before_script:
