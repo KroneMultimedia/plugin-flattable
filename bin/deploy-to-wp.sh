@@ -15,6 +15,7 @@ apt-get update -y
 apt-get install -y rsync
 
 sed -i "s/v9.9.9/$version/g" ${KRN_REPO_SLUG}.php
+sed -i "s/%TRAVIS_TAG%/$version/g" ${KRN_REPO_SLUG}.php
 
 # Cleanup the old dir if it is there
 rm -rf /tmp/tmp_folder-svn
