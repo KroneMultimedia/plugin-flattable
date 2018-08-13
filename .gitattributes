@@ -6,3 +6,5 @@
 /README.md export-ignore
 /CHANGELOG.md export-ignore
 /phpunit.xml.dist export-ignore
+*.png binary
+*.jpg binary
