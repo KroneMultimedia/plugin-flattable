@@ -199,7 +199,7 @@ class Core
                 WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
 
             if (empty($row)) {
-                if(!defined("WP_DEBUG") || !WP_DEBUG) {
+                if( (!defined("WP_DEBUG") || !WP_DEBUG) || defined("KRN_IS_TESTING")) {
                     $this->wpdb->suppress_errors(true);
                 }
                 $this->wpdb->query("ALTER TABLE $table_name ADD " . $column['column'] . ' ' . $column['type']);
