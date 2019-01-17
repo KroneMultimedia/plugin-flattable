@@ -8,7 +8,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
      * Function name is slightly deceiving because it is called at the beginning of the
      * unit test summary (after all tests have run)
      */
-    protected function printHeader()
+    protected function printHeader(): void
     {
         parent::printHeader();
     }
@@ -23,7 +23,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
         return preg_replace("/\++(.*)$/m", " \033[01;31m$1\033[0m", $exceptionMessage);
     }
 
-    protected function printDefectTrace(\PHPUnit\Framework\TestFailure $defect)
+    protected function printDefectTrace(\PHPUnit\Framework\TestFailure $defect): void
     {
         $this->write($this->formatExceptionMsg($defect->getExceptionAsString()));
         $trace = \PHPUnit\Util\Filter::getFilteredStacktrace(
@@ -54,7 +54,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
     /**
      * Fired prior to each individual test
      */
-    public function startTest(\PHPUnit\Framework\Test $test)
+    public function startTest(\PHPUnit\Framework\Test $test): void
     {
         $this->out(">> RUN '".preg_replace("/^test/", "",$test->getName())."'...");
     }
@@ -63,7 +63,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
      * @param PHPUnit\Framework\TestCase
      * @param int time of execution
      */
-    public function endTest(\PHPUnit\Framework\Test $test, $time)
+    public function endTest(\PHPUnit\Framework\Test $test, $time): void
     {
         // copied from parent:endTest()
         if ($test instanceof \PHPUnit\Framework\TestCase) {
@@ -93,7 +93,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
     public function prettySuiteName($s) {
       return preg_replace("/^Tests\\\/", "", $s);
     }
-    public function startTestSuite(\PHPUnit\Framework\TestSuite $suite)
+    public function startTestSuite(\PHPUnit\Framework\TestSuite $suite): void
     {
         parent::startTestSuite($suite);
         if (!$this->headerPrinted) {
@@ -112,7 +112,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
             $this->out("BEGIN SUITE '".$this->prettySuiteName($suite->getName())."'\n");
         }
     }
-    public function endTestSuite(\PHPUnit\Framework\TestSuite $suite)
+    public function endTestSuite(\PHPUnit\Framework\TestSuite $suite): void
     {
         if ($suite->getName() != 'PHPUnit') {
             $this->out("END SUITE '".$this->prettySuiteName($suite->getName())."'\n\n");
@@ -123,7 +123,7 @@ class PrettyPrinter extends \PHPUnit\TextUI\ResultPrinter implements \PHPUnit\Fr
      * result codes that PHPUnit sends to the console
      * @param string $progress
      */
-    protected function writeProgress($progress)
+    protected function writeProgress($progress): void
     {
         // suppress output;
     }
