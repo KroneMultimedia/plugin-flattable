@@ -1,64 +1,58 @@
 <?php
 /**
-* @covers KMM\Flattable\Core
+* @covers \KMM\Flattable\Core
 */
 use KMM\Flattable\Core;
 use phpmock\MockBuilder;
 
-class FlattableTestDB
-{
-    public $prefix = "wptest";
+class FlattableTestDB {
+    public $prefix = 'wptest';
 
-    public function query($sql)
-    {
+    public function query($sql) {
     }
-    public function get_results($r)
-    {
+
+    public function get_results($r) {
     }
-    public function prepare($data)
-    {
+
+    public function prepare($data) {
     }
 }
 
-class TestFlattable extends \WP_UnitTestCase
-{
-    public function setUp()
-    {
-        # setup a rest server
+class TestFlattable extends \WP_UnitTestCase {
+    public function setUp() {
+        // setup a rest server
         parent::setUp();
         $this->core = new Core('i18n');
-        add_filter('krn_flattable_values_article', function() {
-              return ['x' => 1 ];
+        add_filter('krn_flattable_values_article', function () {
+            return ['x' => 1];
         });
-        add_filter('krn_flattable_columns_article', function() {
-              return [
-			          ["column" => "x", "type" => "int(1)", "printf" => "%d"]
+        add_filter('krn_flattable_columns_article', function () {
+            return [
+                      ['column' => 'x', 'type' => 'int(1)', 'printf' => '%d'],
               ];
         });
     }
 
     /**
-    * @test
-    */
-    public function rest_update_no_wp_post()
-    {
+     * @test
+     */
+    public function rest_update_no_wp_post() {
         $response = $this->core->rest_update(null, null, false);
         $this->assertNull($response);
     }
 
     /**
-    * @test
-    */
-    public function delete_not_enabled_post()
-    {
-        $post_id = $this->factory->post->create(['post_type' => "test"]);
+     * @test
+     */
+    public function delete_not_enabled_post() {
+        $post_id = $this->factory->post->create(['post_type' => 'test']);
 
         //Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\KMM\\FlattableTestDB')
-            ->setMethods(array( 'query' ))
+            ->setMethods(['query'])
             ->getMock();
 
-        $mock->prefix = "wptest";
+        $mock->prefix = 'wptest';
 
         //Expect query not sent
         $mock->expects($this->never())
@@ -70,19 +64,18 @@ class TestFlattable extends \WP_UnitTestCase
     }
 
     /**
-    * @test
-    */
-    public function delete_enabled_post()
-    {
-        $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
+     * @test
+     */
+    public function delete_enabled_post() {
+        $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObj = get_post($post_id);
 
         //Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
-            ->setMethods(array( 'query' ))
+            ->setMethods(['query'])
             ->getMock();
 
-        $mock->prefix = "wptest";
+        $mock->prefix = 'wptest';
 
         //Expect query sent
         $mock->expects($this->once())
@@ -97,10 +90,11 @@ class TestFlattable extends \WP_UnitTestCase
         $add_action->setNamespace("\KMM\Flattable")
                 ->setName('do_action')
                 ->setFunction(function ($a) use ($cp) {
-                    $cp->assertEquals($a, "krn_flattable_pre_delete_article");
+                    $cp->assertEquals($a, 'krn_flattable_pre_delete_article');
+
                     return $a;
                 });
-        $add_action_mock =  $add_action->build();
+        $add_action_mock = $add_action->build();
         $add_action_mock->enable();
 
         $this->core->delete_post($post_id, true);
@@ -109,28 +103,26 @@ class TestFlattable extends \WP_UnitTestCase
     }
 
     /**
-    * @test
-    */
-    public function save_post_no_post()
-    {
+     * @test
+     */
+    public function save_post_no_post() {
         $save = $this->core->save_post(12, null, false, false);
         $this->assertNull($save);
     }
 
     /**
-    * @test
-    */
-    public function save_enabled_post_insert_update()
-    {
-        $post_id = $this->factory->post->create(['post_type' => "article", 'post_password' => ""]);
+     * @test
+     */
+    public function save_enabled_post_insert_update() {
+        $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObject = get_post($post_id);
 
         //Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
-            ->setMethods(array( 'query', 'get_charset_collate', 'get_results', 'suppress_errors', 'get_row', 'prepare' ))
+            ->setMethods(['query', 'get_charset_collate', 'get_results', 'suppress_errors', 'get_row', 'prepare'])
             ->getMock();
 
-        $mock->prefix = "wptest";
+        $mock->prefix = 'wptest';
 
         //Expect query sent
         $mock->expects($this->exactly(4))
@@ -143,24 +135,23 @@ class TestFlattable extends \WP_UnitTestCase
     }
 
     /**
-    * @test
-    */
-    public function checkTable()
-    {
-        $post_id = $this->factory->post->create(['post_type' => "test"]);
+     * @test
+     */
+    public function checkTable() {
+        $post_id = $this->factory->post->create(['post_type' => 'test']);
         $post = get_post($post_id);
         $postType = $post->post_type;
         $columns = [
-            ["column" => "post_id", "type" =>  "int(12)"],
-            ["column" => "post_type", "type" =>  "varchar(100)"],
+            ['column' => 'post_id', 'type' => 'int(12)'],
+            ['column' => 'post_type', 'type' => 'varchar(100)'],
         ];
 
         //Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
-            ->setMethods(array( 'get_charset_collate', 'get_results', 'suppress_errors', 'query' ))
+            ->setMethods(['get_charset_collate', 'get_results', 'suppress_errors', 'query'])
             ->getMock();
 
-        $mock->prefix = "wptest";
+        $mock->prefix = 'wptest';
 
         //Expect query sent
         $mock->expects($this->any())
@@ -183,8 +174,7 @@ class TestFlattable extends \WP_UnitTestCase
         $this->assertTrue($check);
     }
 
-    public function tearDown()
-    {
+    public function tearDown() {
         parent::tearDown();
     }
 }
