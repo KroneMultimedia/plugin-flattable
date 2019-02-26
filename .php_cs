@@ -2,16 +2,19 @@
 $config = PhpCsFixer\Config::create();
 $config->setRiskyAllowed(true);
 $config->setRules([
-    '@PSR2' => true,
+    '@Symfony' => true,
     'array_syntax' => [
-        'syntax' => 'short',
+    'syntax' => 'short',
     ],
     'binary_operator_spaces' => [
-        'align_double_arrow' => false,
-        'align_equals' => false,
+    'align_double_arrow' => false,
+    'align_equals' => false,
     ],
     'blank_line_after_namespace' => true,
     'blank_line_after_opening_tag' => true,
+    'braces' => [
+    'position_after_functions_and_oop_constructs' => 'same'
+    ],
     'blank_line_before_statement' => ['statements' => ['return']],
     'concat_space' => ['spacing' => 'one'],
     'function_typehint_space' => true,
@@ -23,14 +26,14 @@ $config->setRules([
     'no_empty_phpdoc' => true,
     'no_empty_statement' => true,
     'no_extra_consecutive_blank_lines' => [
-        'tokens' => [
-            'curly_brace_block',
-            'extra',
-            'parenthesis_brace_block',
-            'square_brace_block',
-            'throw',
-            'use',
-        ],
+    'tokens' => [
+    'curly_brace_block',
+    'extra',
+    'parenthesis_brace_block',
+    'square_brace_block',
+    'throw',
+    'use',
+    ],
     ],
     'no_leading_import_slash' => true,
     'no_leading_namespace_whitespace' => true,
