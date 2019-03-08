@@ -127,7 +127,7 @@ class TestFlattable extends \WP_UnitTestCase {
         //Expect query sent
         $mock->expects($this->exactly(4))
             ->method('query')
-            ->withConsecutive(['ALTER TABLE wptestflattable_article ADD post_id int(12)'], ['ALTER TABLE wptestflattable_article ADD post_type varchar(100)'], ['ALTER TABLE wptestflattable_article ADD x int(1)']);
+            ->withConsecutive(['ALTER TABLE wptestflattable_article ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_article ADD `post_type` varchar(100)'], ['ALTER TABLE wptestflattable_article ADD `x` int(1)']);
 
         $this->core->wpdb = $mock;
 
@@ -161,7 +161,7 @@ class TestFlattable extends \WP_UnitTestCase {
         // Expect query sent
         $mock->expects($this->exactly(2))
             ->method('query')
-            ->withConsecutive(['ALTER TABLE wptestflattable_test ADD post_id int(12)'], ['ALTER TABLE wptestflattable_test ADD post_type varchar(100)']);
+            ->withConsecutive(['ALTER TABLE wptestflattable_test ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_test ADD `post_type` varchar(100)']);
 
         //Expect query sent
         $mock->expects($this->any())
