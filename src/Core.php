@@ -131,7 +131,7 @@ class Core {
                     $updateVals = ["'" . $postType . "'", $postId];
                     $updateInserValues = [];
                     foreach ($finalFields as $key => $value) {
-                        $updateCols[] = "`" . $key . "`";
+                        $updateCols[] = '`' . $key . '`';
                         $updateVals[] = $assoc_db[$key]['printf'];
                         $updateInserValues[] = $value;
                     }
@@ -148,7 +148,7 @@ class Core {
                     $updateCols = [];
                     $updateVals = [];
                     foreach ($finalFields as $key => $value) {
-                        $updateCols[] = "`" . $key  . "`" . ' = ' . $assoc_db[$key]['printf'];
+                        $updateCols[] = '`' . $key . '`' . ' = ' . $assoc_db[$key]['printf'];
                         $updateVals[] = $value;
                     }
                     $updateVals[] = $postId;
@@ -170,7 +170,7 @@ class Core {
 
         $sql_columns = [];
         foreach ($columns as $column) {
-            $sql_columns[] = "`" . $column['column'] . "`" . ' ' . $column['type'];
+            $sql_columns[] = '`' . $column['column'] . '`' . ' ' . $column['type'];
         }
 
         $column_string = join(',', $sql_columns);
