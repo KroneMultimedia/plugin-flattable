@@ -168,6 +168,13 @@ class Core {
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
+        $is_hit = false;
+        $cache_key = sha1($table_name) . '-' . sha1(json_encode($columns));
+        wp_cache_get($cache_key, 'flattable', false, $is_hit);
+        if ($is_hit) {
+            return true;
+        }
+
         $sql_columns = [];
         foreach ($columns as $column) {
             $sql_columns[] = '`' . $column['column'] . '`' . ' ' . $column['type'];
@@ -197,6 +204,7 @@ class Core {
                 $this->wpdb->suppress_errors(false);
             }
         }
+        wp_cache_set($cache_key, 'SET', 'flattable');
 
         return true;
     }
