@@ -2,20 +2,17 @@
 
 namespace KMM\Flattable;
 
-class Core
-{
+class Core {
     private $plugin_dir;
 
-    public function __construct()
-    {
+    public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->plugin_dir = plugin_dir_url(__FILE__) . '../';
         $this->add_filters();
     }
 
-    private function add_filters()
-    {
+    private function add_filters() {
         add_action('save_post', [$this, 'save_post'], 100, 3);
         add_action('delete_post', [$this, 'delete_post'], 100, 3);
 
@@ -27,16 +24,14 @@ class Core
         //DEMO
     }
 
-    public function init()
-    {
+    public function init() {
         $post_types = get_post_types();
         foreach ($post_types as $type) {
             add_action('rest_insert_' . $type, [$this, 'rest_update'], 10, 3);
         }
     }
 
-    public function rest_update($postObj, $request, $update)
-    {
+    public function rest_update($postObj, $request, $update) {
         /*
         * class-wp-rest-attachments-controller.php calls the action with $attachment as array, and also calls parent::update_item(),
         *  -> parent class is class-wp-rest-posts-controller.php, that also calls the action, but with $attachment as type WP_Post
@@ -56,15 +51,13 @@ class Core
         add_filter('rest_request_after_callbacks', $trigger_func, 10, 3);
     }
 
-    public function manualPublish($postId)
-    {
+    public function manualPublish($postId) {
         $postObj = get_post($postId);
         $_POST['post_type'] = $postObj->post_type;
         $this->save_post($postId, $postObj, true);
     }
 
-    public function delete_post($postId, $state = false)
-    {
+    public function delete_post($postId, $state = false) {
         $postObj = get_post($postId);
         $table_name = $this->wpdb->prefix . 'flattable_' . $postObj->post_type;
         //check if flattable is enabled for this post type.
@@ -81,8 +74,7 @@ class Core
         }
     }
 
-    public function save_post($postId, $postObject, $update, $state = false)
-    {
+    public function save_post($postId, $postObject, $update, $state = false) {
         $postType = false;
         if (! $postObject) {
             //postObject not set, check if $_POST has post_type
@@ -139,7 +131,7 @@ class Core
                     $updateVals = ["'" . $postType . "'", $postId];
                     $updateInserValues = [];
                     foreach ($finalFields as $key => $value) {
-                        $updateCols[] = $key;
+                        $updateCols[] = '`' . $key . '`';
                         $updateVals[] = $assoc_db[$key]['printf'];
                         $updateInserValues[] = $value;
                     }
@@ -156,7 +148,7 @@ class Core
                     $updateCols = [];
                     $updateVals = [];
                     foreach ($finalFields as $key => $value) {
-                        $updateCols[] = $key . ' = ' . $assoc_db[$key]['printf'];
+                        $updateCols[] = '`' . $key . '`' . ' = ' . $assoc_db[$key]['printf'];
                         $updateVals[] = $value;
                     }
                     $updateVals[] = $postId;
@@ -171,15 +163,21 @@ class Core
         }
     }
 
-    public function checkTable($postType, $columns)
-    {
+    public function checkTable($postType, $columns) {
         $table_name = $this->wpdb->prefix . 'flattable_' . $postType;
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
+        $is_hit = false;
+        $cache_key = sha1($table_name) . '-' . sha1(json_encode($columns));
+        wp_cache_get($cache_key, 'flattable', false, $is_hit);
+        if ($is_hit) {
+            return true;
+        }
+
         $sql_columns = [];
         foreach ($columns as $column) {
-            $sql_columns[] = $column['column'] . ' ' . $column['type'];
+            $sql_columns[] = '`' . $column['column'] . '`' . ' ' . $column['type'];
         }
 
         $column_string = join(',', $sql_columns);
@@ -190,7 +188,7 @@ class Core
             ,PRIMARY KEY (id)
         ) $charset_collate;";
 
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         $a = dbDelta($sql);
 
         //Check columns
@@ -199,13 +197,15 @@ class Core
                 WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
 
             if (empty($row)) {
-                if( (!defined("WP_DEBUG") || !WP_DEBUG) || defined("KRN_IS_TESTING")) {
+                if ((! defined('WP_DEBUG') || ! WP_DEBUG) || defined('KRN_IS_TESTING')) {
                     $this->wpdb->suppress_errors(true);
                 }
-                $this->wpdb->query("ALTER TABLE $table_name ADD " . $column['column'] . ' ' . $column['type']);
+                $this->wpdb->query("ALTER TABLE $table_name ADD `" . $column['column'] . '` ' . $column['type']);
                 $this->wpdb->suppress_errors(false);
             }
         }
+        wp_cache_set($cache_key, 'SET', 'flattable');
+
         return true;
     }
 }

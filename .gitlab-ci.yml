@@ -19,7 +19,7 @@ Unit Test:
   script:
     - composer update
     - echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
-    - bin/install-wp-tests.sh wordpress_test root 'somepw' mysql latest
+    - bin/install-wp-tests.sh wordpress_test root 'somepw' 127.0.0.1 latest
     - composer update
     - phpunit --colors=always --coverage-text=1.txt
     - grep "Lines:" 1.txt
@@ -35,7 +35,8 @@ tests:phpcs:
   script:
     # Check for var_dump/dump
     - export PATH=~/.composer/vendor/bin:$PATH
-    - php-cs-fixer fix --verbose --dry-run --rules=@PSR2 || true
+    - composer install
+    - composer cs-check
   tags:
     - docker
   except:
