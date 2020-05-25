@@ -21,7 +21,7 @@ Unit Test:
     - echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
     - bin/install-wp-tests.sh wordpress_test root 'somepw' 127.0.0.1 latest
     - composer update
-    - phpunit --colors=always --coverage-text=1.txt
+    - vendor/bin/phpunit --colors=always --coverage-text=1.txt
     - grep "Lines:" 1.txt
   except:
       - /^v.*/ # do not unit test release tags
