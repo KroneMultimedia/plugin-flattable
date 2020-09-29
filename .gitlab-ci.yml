@@ -7,7 +7,7 @@ stages:
 
 Unit Test:
   dependencies: []
-  image: gitlab.krone.at:5000/krn/backend:beta
+  image: registry.krone.at/krn/backend:beta
   tags:
     - docker
   services:
@@ -30,7 +30,7 @@ Unit Test:
 
 
 tests:phpcs:
-  image: gitlab.krone.at:5000/krn/docker_base:beta
+  image: registry.krone.at/krn/docker_base:beta
   stage: tests
   script:
     # Check for var_dump/dump
@@ -43,7 +43,7 @@ tests:phpcs:
     - /^v([0-9]+).*/
 
 tests:phpstan:
-  image: gitlab.krone.at:5000/krn/docker_base:beta
+  image: registry.krone.at/krn/docker_base:beta
   stage: tests
   script:
     # Check for var_dump/dump
@@ -55,7 +55,7 @@ tests:phpstan:
     - /^v([0-9]+).*/
 
 tests:phpcompatibility:
-  image: gitlab.krone.at:5000/krn/docker_base:beta
+  image: registry.krone.at/krn/docker_base:beta
   stage: tests
   script:
     # Check for var_dump/dump
@@ -70,7 +70,7 @@ tests:phpcompatibility:
 
 
 release:publish:
-  image: gitlab.krone.at:5000/krn/fastlane_runner:latest
+  image: registry.krone.at/krn/fastlane_runner:latest
   dependencies: []
   stage: release_publish
   script:
@@ -87,7 +87,7 @@ release:publish:
   - master
 
 svn update:
-  image: gitlab.krone.at:5000/krn/backend:beta
+  image: registry.krone.at/krn/backend:beta
   dependencies: ["release:publish"]
   stage: wordpress.org
   script:
