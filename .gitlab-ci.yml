@@ -1,4 +1,4 @@
 include:
   - project: 'KRN/CI'
-    file: '/gitlab-ci/Wordpress.yml'
+    file: '/gitlab-ci/Wordpress-Github.yml'
 
