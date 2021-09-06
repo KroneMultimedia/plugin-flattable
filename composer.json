@@ -7,6 +7,11 @@
   "extra": {
     "installer-name": "kmm-flattable"
   },
+"repositories": [{
+      "type": "gitlab",
+      "url": "http://gitlab.krone.at/KRN/phpunitwp.git"
+    }
+],
   "require": {
     "php": ">=7.0.0",
     "composer/installers": "~1.0"
@@ -17,7 +22,6 @@
     ]
   },
   "scripts": {
-          "phpstan": "vendor/bin/phpstan analyse src test --level 7 -c phpstan.neon",
           "cs-check": "vendor/bin/php-cs-fixer fix --verbose --diff --dry-run",
           "cs-fix": "vendor/bin/php-cs-fixer fix --verbose --diff"
       },
@@ -29,9 +33,7 @@
   "require-dev": {
     "php-mock/php-mock": "^2.0",
     "friendsofphp/php-cs-fixer": "^2.11",
-    "phpstan/phpstan": "^0.9.2",
-    "phpstan/phpstan-phpunit": "^0.9.4",
-    "phpunit/phpunit": "7.*",
+    "phpunit/phpunit": "dev-add-compatibility-with-php8-to-phpunit-7",
     "scrutinizer/ocular": "^1.5"
   }
 }
