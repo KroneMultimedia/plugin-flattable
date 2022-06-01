@@ -6,8 +6,6 @@
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
-        printerClass="Test\PrettyPrinter"
-        printerFile="tests/phpunit/PrettyPrinter.php"
 
 >
     <testsuites>

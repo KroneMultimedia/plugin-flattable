@@ -19,7 +19,7 @@ class FlattableTestDB {
 }
 
 class TestFlattable extends \WP_UnitTestCase {
-    public function setUp() {
+    public function setUp(): void {
         // setup a rest server
         parent::setUp();
         $this->core = new Core('i18n');
@@ -174,7 +174,7 @@ class TestFlattable extends \WP_UnitTestCase {
         $this->assertTrue($check);
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         parent::tearDown();
     }
 }
