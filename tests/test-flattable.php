@@ -47,14 +47,14 @@ class TestFlattable extends \WP_UnitTestCase {
     public function delete_not_enabled_post() {
         $post_id = $this->factory->post->create(['post_type' => 'test']);
 
-        //Mock the DB
+        // Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\KMM\\FlattableTestDB')
             ->setMethods(['query'])
             ->getMock();
 
         $mock->prefix = 'wptest';
 
-        //Expect query not sent
+        // Expect query not sent
         $mock->expects($this->never())
             ->method('query');
 
@@ -70,21 +70,21 @@ class TestFlattable extends \WP_UnitTestCase {
         $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObj = get_post($post_id);
 
-        //Mock the DB
+        // Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
             ->setMethods(['query'])
             ->getMock();
 
         $mock->prefix = 'wptest';
 
-        //Expect query sent
+        // Expect query sent
         $mock->expects($this->once())
             ->method('query')
             ->with('delete from wptestflattable_article where post_id=' . $post_id);
 
         $this->core->wpdb = $mock;
 
-        //Check if krn_flattable_pre_delete action is called correctly
+        // Check if krn_flattable_pre_delete action is called correctly
         $add_action = new MockBuilder();
         $cp = $this;
         $add_action->setNamespace("\KMM\Flattable")
@@ -117,14 +117,14 @@ class TestFlattable extends \WP_UnitTestCase {
         $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObject = get_post($post_id);
 
-        //Mock the DB
+        // Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
             ->setMethods(['query', 'get_charset_collate', 'get_results', 'suppress_errors', 'get_row', 'prepare'])
             ->getMock();
 
         $mock->prefix = 'wptest';
 
-        //Expect query sent
+        // Expect query sent
         $mock->expects($this->exactly(4))
             ->method('query')
             ->withConsecutive(['ALTER TABLE wptestflattable_article ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_article ADD `post_type` varchar(100)'], ['ALTER TABLE wptestflattable_article ADD `x` int(1)']);
@@ -146,14 +146,14 @@ class TestFlattable extends \WP_UnitTestCase {
             ['column' => 'post_type', 'type' => 'varchar(100)'],
         ];
 
-        //Mock the DB
+        // Mock the DB
         $mock = $this->getMockBuilder('KMM\\Flattable\\Core\\FlattableTestDB')
             ->setMethods(['get_charset_collate', 'get_results', 'suppress_errors', 'query'])
             ->getMock();
 
         $mock->prefix = 'wptest';
 
-        //Expect query sent
+        // Expect query sent
         $mock->expects($this->any())
             ->method('suppress_errors')
             ->willReturn(true);
@@ -163,7 +163,7 @@ class TestFlattable extends \WP_UnitTestCase {
             ->method('query')
             ->withConsecutive(['ALTER TABLE wptestflattable_test ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_test ADD `post_type` varchar(100)']);
 
-        //Expect query sent
+        // Expect query sent
         $mock->expects($this->any())
             ->method('suppress_errors')
             ->willReturn(false);

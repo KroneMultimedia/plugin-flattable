@@ -30,7 +30,7 @@
   },
   "require-dev": {
     "php-mock/php-mock": "^2.0",
-    "friendsofphp/php-cs-fixer": "^2.11",
+    "friendsofphp/php-cs-fixer": "^3.8",
     "scrutinizer/ocular": "^1.5",
                         "phpunit/phpunit": ">=8.5.23"
   }
