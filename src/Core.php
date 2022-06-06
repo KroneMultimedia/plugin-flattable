@@ -21,7 +21,7 @@ class Core {
 
         add_action('init', [$this, 'init'], 30);
 
-        //DEMO
+        // DEMO
     }
 
     public function init() {
@@ -60,12 +60,12 @@ class Core {
     public function delete_post($postId, $state = false) {
         $postObj = get_post($postId);
         $table_name = $this->wpdb->prefix . 'flattable_' . $postObj->post_type;
-        //check if flattable is enabled for this post type.
+        // check if flattable is enabled for this post type.
         $enabled = apply_filters('krn_flattable_enabled_' . $postObj->post_type, $state, $postObj, $postObj);
         if ($enabled) {
             do_action('krn_flattable_pre_delete_' . $postObj->post_type, $postObj);
             $customCols = apply_filters('krn_flattable_columns_' . $postObj->post_type, [], $postObj);
-            //check if there are any other than required columns, we dont need an "empty" table
+            // check if there are any other than required columns, we dont need an "empty" table
             if (empty($customCols)) {
                 return;
             }
@@ -77,25 +77,25 @@ class Core {
     public function save_post($postId, $postObject, $update, $state = false) {
         $postType = false;
         if (! $postObject) {
-            //postObject not set, check if $_POST has post_type
+            // postObject not set, check if $_POST has post_type
             if (isset($_POST['post_type'])) {
                 $postType = $_POST['post_type'];
             }
         } else {
-            //PostObject set
+            // PostObject set
             $postType = $postObject->post_type;
         }
-        //Neither $postObject nor $_POST[post_type] set return here.
+        // Neither $postObject nor $_POST[post_type] set return here.
         if (! $postType) {
             return;
         }
 
         $table_name = $this->wpdb->prefix . 'flattable_' . $postType;
-        //check if flattable is enabled for this post type.
+        // check if flattable is enabled for this post type.
         $enabled = apply_filters('krn_flattable_enabled_' . $postType, $state, $postObject, $postObject);
         if ($enabled) {
-            //We are in flattable enabled mode.
-            //get a list of columns.
+            // We are in flattable enabled mode.
+            // get a list of columns.
             $defaultCols = [
                 ['column' => 'post_id', 'type' => 'int(12)'],
                 ['column' => 'post_type', 'type' => 'varchar(100)'],
@@ -103,11 +103,11 @@ class Core {
             $customCols = apply_filters('krn_flattable_columns_' . $postType, [], $postObject);
             $columns = array_merge($defaultCols, $customCols);
             do_action('krn_flattable_pre_write_' . $postType, $columns, $postObject);
-            //check if there are any other than required columns, we dont need an "empty" table
+            // check if there are any other than required columns, we dont need an "empty" table
             if (empty($customCols)) {
                 return;
             }
-            //check if table exists, and if table has atleast required columns
+            // check if table exists, and if table has atleast required columns
             if ($this->checkTable($postType, $columns)) {
                 $db_cols = [];
                 $assoc_db = [];
@@ -119,14 +119,14 @@ class Core {
                 $finalFields = apply_filters('krn_flattable_values_' . $postType, [], $postObject);
 
                 $checkRow = $this->wpdb->get_row("select post_id from $table_name where post_id=" . $postId);
-                //if we have already a published record, update it
+                // if we have already a published record, update it
                 $update = true;
                 if (! $checkRow) {
                     $update = false;
                 }
 
                 if (! $update) {
-                    //INSERT
+                    // INSERT
                     $updateCols = ['post_type', 'post_id'];
                     $updateVals = ["'" . $postType . "'", $postId];
                     $updateInserValues = [];
@@ -139,12 +139,12 @@ class Core {
                     $query = call_user_func_array([$this->wpdb, 'prepare'], array_merge([$sql], $updateInserValues));
                     $this->wpdb->query($query);
                 } else {
-                    //UPDATE
+                    // UPDATE
 
-                    //$v = get_field('field_58512668ff1d2', $postId);
-                    //echo "<pre>";
-                    //var_dump($v);
-                    //exit;
+                    // $v = get_field('field_58512668ff1d2', $postId);
+                    // echo "<pre>";
+                    // var_dump($v);
+                    // exit;
                     $updateCols = [];
                     $updateVals = [];
                     foreach ($finalFields as $key => $value) {
@@ -191,7 +191,7 @@ class Core {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         $a = dbDelta($sql);
 
-        //Check columns
+        // Check columns
         foreach ($columns as $column) {
             $row = $this->wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE table_name = '$table_name' AND column_name = '" . $column['column'] . "'");
