@@ -141,6 +141,7 @@ class TestFlattable extends WP_UnitTestCase
             ->withConsecutive(['ALTER TABLE wptestflattable_article ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_article ADD `post_type` varchar(100)'], ['ALTER TABLE wptestflattable_article ADD `x` int(1)']);
 
         $this->core->wpdb = $mock;
+        $this->core->wpdb->last_error = 'xxx';
 
         $this->core->save_post($post_id, $postObject, false, true);
     }
