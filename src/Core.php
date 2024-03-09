@@ -153,7 +153,7 @@ class Core
                     $query = call_user_func_array([$this->wpdb, 'prepare'], array_merge([$sql], $updateInserValues));
                     $r1 = $this->wpdb->query($query);
                     if (false == $r1) {
-                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error], true) . "\n");
+                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error, $this->wpdb->last_result], true) . "\n");
                     }
                 } else {
                     // UPDATE
@@ -174,7 +174,7 @@ class Core
                     $query = call_user_func_array([$this->wpdb, 'prepare'], array_merge([$sql], $updateVals));
                     $r1 = $this->wpdb->query($query);
                     if (false == $r1) {
-                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error], true) . "\n");
+                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error, $this->wpdb->last_result], true) . "\n");
                     }
                 }
 
