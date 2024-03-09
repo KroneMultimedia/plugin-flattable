@@ -151,7 +151,10 @@ class Core
                     }
                     $sql = " insert into $table_name (" . join(',', $updateCols) . ') VALUES(' . join(',', $updateVals) . ')';
                     $query = call_user_func_array([$this->wpdb, 'prepare'], array_merge([$sql], $updateInserValues));
-                    $this->wpdb->query($query);
+                    $r1 = $this->wpdb->query($query);
+                    if (! $r1) {
+                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error], true) . "\n");
+                    }
                 } else {
                     // UPDATE
 
@@ -169,10 +172,15 @@ class Core
 
                     $sql = "update $table_name SET " . join(',', $updateCols) . ' WHERE post_id = %d';
                     $query = call_user_func_array([$this->wpdb, 'prepare'], array_merge([$sql], $updateVals));
-                    $this->wpdb->query($query);
+                    $r1 = $this->wpdb->query($query);
+                    if (! $r1) {
+                        error_log('Flattable: query() failed, ' . print_r([$query, $this->wpdb->last_error], true) . "\n");
+                    }
                 }
 
                 do_action('krn_flattable_post_write_' . $postType, $postObject);
+            } else {
+                error_log('Flattable: checkTable() failed, ' . print_r([$postType, $columns], true) . "\n");
             }
         }
     }
