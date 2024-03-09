@@ -2,17 +2,21 @@
 
 namespace KMM\Flattable;
 
-class Core {
+class Core
+{
     private $plugin_dir;
 
-    public function __construct() {
+    public function __construct()
+    {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->plugin_dir = plugin_dir_url(__FILE__) . '../';
         $this->add_filters();
     }
 
-    private function add_filters() {
+    private function add_filters()
+    {
+        add_action('acf/save_post', [$this, 'acf_save_post'], 1, 1);
         add_action('save_post', [$this, 'save_post'], 100, 3);
         add_action('delete_post', [$this, 'delete_post'], 100, 3);
 
@@ -24,14 +28,16 @@ class Core {
         // DEMO
     }
 
-    public function init() {
+    public function init()
+    {
         $post_types = get_post_types();
         foreach ($post_types as $type) {
             add_action('rest_insert_' . $type, [$this, 'rest_update'], 10, 3);
         }
     }
 
-    public function rest_update($postObj, $request, $update) {
+    public function rest_update($postObj, $request, $update)
+    {
         /*
         * class-wp-rest-attachments-controller.php calls the action with $attachment as array, and also calls parent::update_item(),
         *  -> parent class is class-wp-rest-posts-controller.php, that also calls the action, but with $attachment as type WP_Post
@@ -51,13 +57,15 @@ class Core {
         add_filter('rest_request_after_callbacks', $trigger_func, 10, 3);
     }
 
-    public function manualPublish($postId) {
+    public function manualPublish($postId)
+    {
         $postObj = get_post($postId);
         $_POST['post_type'] = $postObj->post_type;
         $this->save_post($postId, $postObj, true);
     }
 
-    public function delete_post($postId, $state = false) {
+    public function delete_post($postId, $state = false)
+    {
         $postObj = get_post($postId);
         $table_name = $this->wpdb->prefix . 'flattable_' . $postObj->post_type;
         // check if flattable is enabled for this post type.
@@ -74,7 +82,13 @@ class Core {
         }
     }
 
-    public function save_post($postId, $postObject, $update, $state = false) {
+    public function acf_save_post($postId)
+    {
+        $this->manualPublish($postId);
+    }
+
+    public function save_post($postId, $postObject, $update, $state = false)
+    {
         $postType = false;
         if (! $postObject) {
             // postObject not set, check if $_POST has post_type
@@ -148,7 +162,7 @@ class Core {
                     $updateCols = [];
                     $updateVals = [];
                     foreach ($finalFields as $key => $value) {
-                        $updateCols[] = '`' . $key . '`' . ' = ' . $assoc_db[$key]['printf'];
+                        $updateCols[] = '`' . $key . '` = ' . $assoc_db[$key]['printf'];
                         $updateVals[] = $value;
                     }
                     $updateVals[] = $postId;
@@ -163,7 +177,8 @@ class Core {
         }
     }
 
-    public function checkTable($postType, $columns) {
+    public function checkTable($postType, $columns)
+    {
         $table_name = $this->wpdb->prefix . 'flattable_' . $postType;
 
         $charset_collate = $this->wpdb->get_charset_collate();
@@ -177,7 +192,7 @@ class Core {
 
         $sql_columns = [];
         foreach ($columns as $column) {
-            $sql_columns[] = '`' . $column['column'] . '`' . ' ' . $column['type'];
+            $sql_columns[] = '`' . $column['column'] . '` ' . $column['type'];
         }
 
         $column_string = join(',', $sql_columns);

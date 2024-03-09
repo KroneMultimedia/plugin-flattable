@@ -16,7 +16,6 @@ final class Php73 extends Config {
         ],
                 'binary_operator_spaces' => [
                 ],
-                'blank_line_after_namespace' => true,
                 'blank_line_after_opening_tag' => true,
                 'braces' => [
                 'position_after_functions_and_oop_constructs' => 'same',
@@ -52,7 +51,6 @@ final class Php73 extends Config {
                 'random_api_migration' => true,
                 'self_accessor' => true,
                 'short_scalar_cast' => true,
-                'single_blank_line_before_namespace' => true,
                 'single_class_element_per_statement' => true,
                 'single_quote' => true,
                 'space_after_semicolon' => true,
