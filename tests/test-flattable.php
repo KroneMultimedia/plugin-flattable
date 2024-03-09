@@ -1,25 +1,31 @@
 <?php
 /**
-* @covers \KMM\Flattable\Core
-*/
+ * @covers \KMM\Flattable\Core
+ */
 use KMM\Flattable\Core;
 use phpmock\MockBuilder;
 
-class FlattableTestDB {
+class FlattableTestDB
+{
     public $prefix = 'wptest';
 
-    public function query($sql) {
+    public function query($sql)
+    {
     }
 
-    public function get_results($r) {
+    public function get_results($r)
+    {
     }
 
-    public function prepare($data) {
+    public function prepare($data)
+    {
     }
 }
 
-class TestFlattable extends \WP_UnitTestCase {
-    public function setUp(): void {
+class TestFlattable extends WP_UnitTestCase
+{
+    public function setUp(): void
+    {
         // setup a rest server
         parent::setUp();
         $this->core = new Core('i18n');
@@ -36,7 +42,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function rest_update_no_wp_post() {
+    public function rest_update_no_wp_post()
+    {
         $response = $this->core->rest_update(null, null, false);
         $this->assertNull($response);
     }
@@ -44,7 +51,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function delete_not_enabled_post() {
+    public function delete_not_enabled_post()
+    {
         $post_id = $this->factory->post->create(['post_type' => 'test']);
 
         // Mock the DB
@@ -66,7 +74,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function delete_enabled_post() {
+    public function delete_enabled_post()
+    {
         $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObj = get_post($post_id);
 
@@ -105,7 +114,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function save_post_no_post() {
+    public function save_post_no_post()
+    {
         $save = $this->core->save_post(12, null, false, false);
         $this->assertNull($save);
     }
@@ -113,7 +123,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function save_enabled_post_insert_update() {
+    public function save_enabled_post_insert_update()
+    {
         $post_id = $this->factory->post->create(['post_type' => 'article', 'post_password' => '']);
         $postObject = get_post($post_id);
 
@@ -137,7 +148,8 @@ class TestFlattable extends \WP_UnitTestCase {
     /**
      * @test
      */
-    public function checkTable() {
+    public function checkTable()
+    {
         $post_id = $this->factory->post->create(['post_type' => 'test']);
         $post = get_post($post_id);
         $postType = $post->post_type;
@@ -174,7 +186,8 @@ class TestFlattable extends \WP_UnitTestCase {
         $this->assertTrue($check);
     }
 
-    public function tearDown(): void {
+    public function tearDown(): void
+    {
         parent::tearDown();
     }
 }
