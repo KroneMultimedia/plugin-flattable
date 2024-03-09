@@ -142,6 +142,7 @@ class TestFlattable extends WP_UnitTestCase
 
         $this->core->wpdb = $mock;
         $this->core->wpdb->last_error = 'xxx';
+        $this->core->wpdb->last_result = 'xxx';
 
         $this->core->save_post($post_id, $postObject, false, true);
     }
