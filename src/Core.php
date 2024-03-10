@@ -89,6 +89,8 @@ class Core
 
     public function save_post($postId, $postObject, $update, $state = false)
     {
+        clean_post_cache($postId);
+        $postObject = get_post($postId);
         $postType = false;
         if (! $postObject) {
             // postObject not set, check if $_POST has post_type
