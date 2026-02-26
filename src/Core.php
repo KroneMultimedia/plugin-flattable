@@ -60,6 +60,12 @@ class Core
     public function manualPublish($postId)
     {
         $postObj = get_post($postId);
+        if (! $postObj) {
+            error_log("manualPublish: Post not found for ID: " . $postId);
+
+            return;
+        }
+
         $_POST['post_type'] = $postObj->post_type;
         $this->save_post($postId, $postObj, true);
     }
