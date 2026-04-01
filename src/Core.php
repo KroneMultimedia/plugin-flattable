@@ -5,6 +5,7 @@ namespace KMM\Flattable;
 class Core
 {
     private $plugin_dir;
+    private $wpdb;
 
     public function __construct()
     {
