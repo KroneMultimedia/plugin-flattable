@@ -178,7 +178,7 @@ class TestFlattable extends WP_UnitTestCase
         // Expect query sent
         $mock->expects($this->exactly(2))
             ->method('query')
-            ->withConsecutive(['ALTER TABLE wptestflattable_test ADD `post_id` bigint(20)'], ['ALTER TABLE wptestflattable_test ADD `post_type` varchar(100)']);
+            ->withConsecutive(['ALTER TABLE wptestflattable_test ADD `post_id` int(12)'], ['ALTER TABLE wptestflattable_test ADD `post_type` varchar(100)']);
 
         // Expect query sent
         $mock->expects($this->any())
