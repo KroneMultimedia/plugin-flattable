@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @covers \KMM\Flattable\Core
  */
@@ -36,8 +37,8 @@ class TestFlattable extends WP_UnitTestCase
         });
         add_filter('krn_flattable_columns_article', function () {
             return [
-                      ['column' => 'x', 'type' => 'int(1)', 'printf' => '%d'],
-              ];
+                ['column' => 'x', 'type' => 'int(1)', 'printf' => '%d'],
+            ];
         });
     }
 
