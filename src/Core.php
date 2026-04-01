@@ -113,7 +113,7 @@ class Core
             // We are in flattable enabled mode.
             // get a list of columns.
             $defaultCols = [
-                ['column' => 'post_id', 'type' => 'int(12)'],
+                ['column' => 'post_id', 'type' => 'bigint(20)'],
                 ['column' => 'post_type', 'type' => 'varchar(100)'],
             ];
             $customCols = apply_filters('krn_flattable_columns_' . $postType, [], $postObject);
@@ -208,7 +208,7 @@ class Core
         $column_string = join(',', $sql_columns);
 
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
-            id int(12) NOT NULL AUTO_INCREMENT,
+            id bigint(20) NOT NULL AUTO_INCREMENT,
             $column_string
             ,PRIMARY KEY (id)
         ) $charset_collate;";
